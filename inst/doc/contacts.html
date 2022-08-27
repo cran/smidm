@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Statistical Modelling for Infectious Disease Management - Contacts</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Statistical Modelling for Infectious
+Disease Management - Contacts</h1>
+
+
+
+<div id="question" class="section level2">
+<h2>Question</h2>
+<p>One person has become infected with COVID-19 on 28.12.2021. When will
+the contact person become ill and show the first symptoms?</p>
+</div>
+<div id="generating-a-data-frame-with-dates-and-illness-probability-of-contacts-using-get_serial_interval_density" class="section level2">
+<h2>Generating a data frame with dates and illness probability of
+contacts using <code>get_serial_interval_density</code></h2>
+<p>The function <code>get_serial_interval_density()</code> creates a
+dataframe containing the probability that a contact will start showing
+symptoms (serial interval) at a particular date/time. Therefore, only
+the symptom begin date of the infected person is needed. Furthermore,
+the probability when the infected contacts of infected contacts show
+symptoms can be calculated, known as the second and also third
+generation of contacts.</p>
+<div id="inputs" class="section level3">
+<h3>Inputs</h3>
+<p>Multiple arguments are needed for the function
+<code>get_serial_interval_density()</code>:</p>
+<p>First of all, the <code>symptom_begin_date</code> has to be
+specified, which is defined as the date when the person started to show
+symptoms.</p>
+<p>Furthermore, the <code>max_serial_interval_days</code> is needed,
+which defines the interval length of the distribution output.</p>
+<p>The remaining two inputs <code>shape_serial</code> and
+<code>rate_serial</code> are the parameters of the log-normal
+distribution, which models the serial interval.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>symptom_begin_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;2021-12-28&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>max_serial_interval_days <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>shape_serial <span class="ot">&lt;-</span> <span class="fl">2.154631545</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rate_serial <span class="ot">&lt;-</span> <span class="fl">0.377343528</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>serial_in_df_v1 <span class="ot">&lt;-</span> <span class="fu">get_serial_interval_density</span>(symptom_begin_date,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                                               max_serial_interval_days,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                                               shape_serial,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                                               rate_serial)</span></code></pre></div>
+</div>
+<div id="methodology" class="section level3">
+<h3>Methodology</h3>
+<p>The default values of the parameters for the distribution, when the
+infected contacts will show symptoms, are from the paper Najafi et
+al. [1], in which a gamma distribution for the serial interval between
+symptom onsets of infected persons and the symptom onset of infected
+contacts was estimated.</p>
+<p>For the second generation of contacts the probability equals the
+summation of random variables because we assume that the infection from
+infected person to the first contact generation is independent from the
+first to the second generation. Thus, a convolution of two identical
+gamma distributions has to be conducted. For gamma distributions the
+convolutions of gamma distributions equals the summation of their first
+parameters [2]. Thus, the density for the second generation of infected
+persons showing symptoms is given by a gamma distribution with <span class="math inline">\(2 \cdot\)</span> <code>shape_serial</code> and the
+same <code>rate_serial</code>. In general, the serial interval for the
+<span class="math inline">\(i\)</span>-th generation of contacts can be
+calculated with a gamma distribution with parameters <span class="math inline">\(i \cdot\)</span> <code>shape_serial</code> and
+<code>rate_serial</code>. This holds in an analogous way for the third
+generation.</p>
+</div>
+<div id="output" class="section level3">
+<h3>Output</h3>
+<p>The function call returns the following data set:</p>
+<table>
+<caption>values 100 to 109 of resulting data frame</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">dates</th>
+<th align="right">distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">100</td>
+<td align="left">2022-01-01 04:00:00</td>
+<td align="right">0.1233038</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="left">2022-01-01 05:00:00</td>
+<td align="right">0.1227971</td>
+</tr>
+<tr class="odd">
+<td align="left">102</td>
+<td align="left">2022-01-01 06:00:00</td>
+<td align="right">0.1222783</td>
+</tr>
+<tr class="even">
+<td align="left">103</td>
+<td align="left">2022-01-01 07:00:00</td>
+<td align="right">0.1217479</td>
+</tr>
+<tr class="odd">
+<td align="left">104</td>
+<td align="left">2022-01-01 08:00:00</td>
+<td align="right">0.1212064</td>
+</tr>
+<tr class="even">
+<td align="left">105</td>
+<td align="left">2022-01-01 09:00:00</td>
+<td align="right">0.1206542</td>
+</tr>
+<tr class="odd">
+<td align="left">106</td>
+<td align="left">2022-01-01 10:00:00</td>
+<td align="right">0.1200916</td>
+</tr>
+<tr class="even">
+<td align="left">107</td>
+<td align="left">2022-01-01 11:00:00</td>
+<td align="right">0.1195191</td>
+</tr>
+<tr class="odd">
+<td align="left">108</td>
+<td align="left">2022-01-01 12:00:00</td>
+<td align="right">0.1189372</td>
+</tr>
+<tr class="even">
+<td align="left">109</td>
+<td align="left">2022-01-01 13:00:00</td>
+<td align="right">0.1183462</td>
+</tr>
+</tbody>
+</table>
+<p>The data frame shows for each hour beginning at
+<code>symptom_begin_date</code> until
+<code>max_serial_interval_days</code> the resulting density of the gamma
+distribution. This density can be used for calculating the most probable
+period for a contact person start showing symptoms. The same data frame
+is obtained for the second generation. Here, the time interval of the
+distribution is larger.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>symptom_begin_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;2021-12-28&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>max_serial_interval_days <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>shape_serial <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fl">2.154631545</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>rate_serial <span class="ot">&lt;-</span> <span class="fl">0.377343528</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>serial_in_df_v2 <span class="ot">&lt;-</span> <span class="fu">get_serial_interval_density</span>(symptom_begin_date,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                               max_serial_interval_days,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                                               shape_serial,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                                               rate_serial)</span></code></pre></div>
+<table>
+<caption>values 100 to 109 of resulting data frame</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">dates</th>
+<th align="right">distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">100</td>
+<td align="left">2022-01-01 04:00:00</td>
+<td align="right">0.0383758</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="left">2022-01-01 05:00:00</td>
+<td align="right">0.0390547</td>
+</tr>
+<tr class="odd">
+<td align="left">102</td>
+<td align="left">2022-01-01 06:00:00</td>
+<td align="right">0.0397325</td>
+</tr>
+<tr class="even">
+<td align="left">103</td>
+<td align="left">2022-01-01 07:00:00</td>
+<td align="right">0.0404089</td>
+</tr>
+<tr class="odd">
+<td align="left">104</td>
+<td align="left">2022-01-01 08:00:00</td>
+<td align="right">0.0410838</td>
+</tr>
+<tr class="even">
+<td align="left">105</td>
+<td align="left">2022-01-01 09:00:00</td>
+<td align="right">0.0417569</td>
+</tr>
+<tr class="odd">
+<td align="left">106</td>
+<td align="left">2022-01-01 10:00:00</td>
+<td align="right">0.0424281</td>
+</tr>
+<tr class="even">
+<td align="left">107</td>
+<td align="left">2022-01-01 11:00:00</td>
+<td align="right">0.0430971</td>
+</tr>
+<tr class="odd">
+<td align="left">108</td>
+<td align="left">2022-01-01 12:00:00</td>
+<td align="right">0.0437638</td>
+</tr>
+<tr class="even">
+<td align="left">109</td>
+<td align="left">2022-01-01 13:00:00</td>
+<td align="right">0.0444279</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="visualization-example-of-the-data-frame-of-get_serial_interval_density" class="section level2">
+<h2>Visualization example of the data frame of
+<code>get_serial_interval_density</code></h2>
+<p>The following code generates a plot with the gamma distribution of
+the illness probability of the first contact generation and the 80% and
+95% high density intervals. In addition, the illness probability for the
+second generation is plotted in violet.</p>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.calculate_qstart_qend <span class="ot">&lt;-</span> <span class="cf">function</span>(probability, df) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    hdr_df <span class="ot">&lt;-</span> <span class="fu">hdr</span>(<span class="at">den =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(df<span class="sc">$</span>distribution), <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">p =</span> probability <span class="sc">*</span> <span class="dv">100</span>)<span class="sc">$</span>hdr</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    qstart <span class="ot">&lt;-</span> (hdr_df[<span class="dv">1</span>, <span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">24</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    qend   <span class="ot">&lt;-</span> (hdr_df[<span class="dv">1</span>, <span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">24</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="st">&quot;qstart&quot;</span> <span class="ot">=</span> qstart, <span class="st">&quot;qend&quot;</span> <span class="ot">=</span> qend))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.shade_curve <span class="ot">&lt;-</span> <span class="cf">function</span>(df, qstart, qend, <span class="at">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  subset_df <span class="ot">&lt;-</span> df[<span class="fu">floor</span>(qstart <span class="sc">*</span> <span class="dv">24</span>)<span class="sc">:</span><span class="fu">ceiling</span>(qend <span class="sc">*</span> <span class="dv">24</span>), ]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> subset_df,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> fill, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="cn">NA</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">alpha =</span> alpha)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  symptom_begin_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;2021-12-28&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> <span class="fu">get_serial_interval_density</span>(symptom_begin_date,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">max_serial_interval_days =</span> <span class="dv">20</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">shape_serial =</span> <span class="fl">2.154631545</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">rate_serial =</span> <span class="fl">0.377343528</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  period_80 <span class="ot">&lt;-</span> <span class="fu">.calculate_qstart_qend</span>(<span class="fl">0.8</span>, df) </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  period_95 <span class="ot">&lt;-</span> <span class="fu">.calculate_qstart_qend</span>(<span class="fl">0.95</span>, df)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  df_2 <span class="ot">&lt;-</span> <span class="fu">get_serial_interval_density</span>(symptom_begin_date,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">max_serial_interval_days =</span> <span class="dv">20</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">shape_serial =</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fl">2.154631545</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">rate_serial =</span> <span class="fl">0.377343528</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_start <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="fu">format</span>(<span class="fu">as.POSIXct</span>(symptom_begin_date, <span class="at">tz =</span> <span class="st">&quot;CET&quot;</span>), <span class="st">&quot;%Y-%m-%d&quot;</span>))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_end <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="fu">format</span>(<span class="fu">as.POSIXct</span>(symptom_begin_date <span class="sc">+</span> <span class="dv">1</span>, <span class="at">tz =</span> <span class="st">&quot;CET&quot;</span>), <span class="st">&quot;%Y-%m-%d&quot;</span>))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_mid <span class="ot">&lt;-</span> symp_date_posixct_start <span class="sc">-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(symp_date_posixct_start,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>                           symp_date_posixct_end, <span class="at">units =</span> <span class="st">&quot;hours&quot;</span>)) <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">3600</span> </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  </span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_datetime</span>(<span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">date_breaks</span>(<span class="st">&quot;1 days&quot;</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">date_format</span>(<span class="st">&quot;%d %b&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># scale_x_continuous(breaks = x_tick,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                    labels = x_label) +</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># theme(axis.ticks.x = element_line(color = c(rbind(rep(&quot;black&quot;, length(x_label) / 2), rep(NA, length(x_label) / 2))),        linetype = 2, size = 1)) +</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="fu">aes</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution), <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="fu">aes</span>(<span class="at">x =</span> df_2<span class="sc">$</span>dates, <span class="at">y =</span> df_2<span class="sc">$</span>distribution), <span class="at">color =</span> <span class="st">&quot;purple&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.shade_curve</span>(<span class="at">df =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                 period_80<span class="sc">$</span>qstart,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                 period_80<span class="sc">$</span>qend) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.shade_curve</span>(<span class="at">df =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                 period_95<span class="sc">$</span>qstart,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                 period_95<span class="sc">$</span>qend,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_rect</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">xmin =</span> symp_date_posixct_start,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                                <span class="at">xmax =</span> symp_date_posixct_end,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                                <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>                                <span class="at">ymax =</span> <span class="cn">Inf</span>),</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">xmin =</span> xmin, <span class="at">xmax =</span> xmax, <span class="at">ymin =</span> ymin, <span class="at">ymax =</span> ymax),</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;brown&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label</span>(<span class="fu">aes</span>(<span class="at">x =</span> symp_date_posixct_mid, <span class="at">y =</span> <span class="fl">0.9</span><span class="sc">*</span><span class="fu">max</span>(df<span class="sc">$</span>distribution), <span class="at">label =</span> <span class="st">&quot;symptom</span><span class="sc">\n</span><span class="st">onset&quot;</span>),</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>              <span class="at">colour =</span> <span class="st">&quot;brown&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">label.size =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;probability&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;timeline&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">&#39;Verteilung&#39;</span>) <span class="sc">+</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ggtitle(&quot;Visualization of get_infection_date_density &quot;) +</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>, <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span><span class="sc">*</span><span class="dv">5</span><span class="sc">/</span><span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">angle =</span> <span class="dv">30</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;gray50&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;gray50&quot;</span>))</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  g</span></code></pre></div>
+</details>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAACnVBMVEUAAAAAADIAADoAAGYAOjoAOlgAOmYAOpAAZpAAZrYzMzM6AAA6ADo6Mkk6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kLY6kLw6kNtJMQBmAABmADpmOgBmOjpmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtpxmtrZmtrxmtttmtv98nJB/f39/f5V/f6t/lZV/lcF/q9aBnNuQOgCQZgCQZjqQZmaQZraQkGaQnJCQtpCQttuQ29uQ2/+Vf3+Vf6uVlX+VlZWVlauVq6uVq8GVq9aVwdaVweudnJCgIPChI7WlKiqlKlSlKnmlVFSlVHmlVJ2leb+rf3+rlX+rlZWrlcGrq5Wrq6urq8Grwaurwdar1uur1v+vH5O0Kiq0Knm0VCq0VHm0eZ20eb+0nb+0nd+2ZgC2Zjq2Zma2kDq2kGa2kJC2kLa2nWa2tma2tpC2tra2ttu2vLa227a229u22/+2/7a2/9u2//+8tpDBlX/BlZXBq5XBq6vBq8HBwdbB1tbB1uvB6//EF13EKirEVCrEeSrEnb/End/Ev7/Ev9/Ev//RD3PTVCrTeSrTeVTTv9/T3//Wq3/Wq5XWsbHWwZXWwavW1sHW1tbW1uvW6+vW6//W///ZkJDbkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb/9vb///dXFzheSrheVThnXnhv7/h3//h/9/h///kDQ3kYmLknJzkwMDrwZXrwavr1qvr1sHr1tbr69br6+vr6//r///vvLzxnVTxnXnxv3nxv53x353x37/x3//x/9/x///1cXH/AAD/enr/tmb/tpD/v3n/zMz/1qv/25D/27b/29v/353/37//39//68H/69b/6+v//7b//7///9b//9v//9///+v///+ndEZZAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nO2djZ8dV1nHr9uYEFbbSoOxpA1axMS7QC31hdrYYCGu22IblCKEqKAbG994SQAjVSkgCBurFUpBSFuE0Bi0sJAC9cJWUOy9WewmtKRNc7P3b3HOvJ7XufNyXp5z5nk+n24z9zdzztxnvve8zHl5ehM0NMDWc30DaGhlhoCigTYEFA20IaBooA0BRQNtCCgaaNME6IA25ujUx2ljjkqugi+BvKmQHICAtpNA3lRIDkBA20kgbyokByCg7SSQNxWSAxDQdhLImwrJAQhoOwnkTYXkAAS0nQTypkJyAALaTgJ5UyE5AAFtJ4G8qZAcgIC2k0DeVEgOQEDbSSBvKiQHIKDtJJA3FZIDENB2EsibCskBCGg7CeRNheQABLSdBPKmQnIAAtpOAnlTITkAAW0ngbypkBzgK6CjzPS5opEEEpqQHOAloCPWNLmikQQSmpAc4COgMZWnh7GljAb7fMBLCCh3FPMYkZkCmjFq1ktqCSQ0ITnAN0AzPilAU0ZNekktgYQmJAd4BmhKJw8oS2hIzwe8hIDSRwWfHKCnhxShIT0f8BICSh8VfAqAUoSG9HzASwgodUTxKQJaVPMhPR/wEgJaGM2nBNCc0JCeD3gJAc1tNA3QrJoP6fmAl/wC1IDlt8ryKQc0ITSk5wNeQkBTKwaPygCNCQ3p+YCXENDESPlZBdAhP+7p+fMBLyGgiZH6vRKgQ27c0/PnA15CQGPjht/LAB0ioAiodRudrmFRJY8WmLkC9IdTz4h/R5L5IeoSdHhaPXXEuwIEvBR2Cfpfv/eVaafEtzmSUFgOqGLqiHfPB7wUNqAnb60E6KgmoEw71O/nA15CQAdZAVoH0KFibpN3zwe85BugF7+0f2HhDx6ZTP5v4Y+iw+c+ePvk5G3/e8/CLR+ZXLxnYeFtTxAqv/yl+JyLRxcWFm6fTJ6+J7rmrY8QYLlTE0BHDQAdyuc2efd8wEu+AXpygdgt/xSjSTD9WETdP5DPPkpwJNSevPXvknNSQJ/aH19DClP+1BRQJYWlgFpZ8AkSGgRUac998Lao4PtOwuFXkj8nF257ZPLd/eTvdxYi+eTCLf8YlbSk7EzOIYVlesydGgMqn0Q/DdAhAmpF8g7QW976H9+L/0kKz7gYPRmVp1F1Tli8eJQASo6TDwigCdPpMXcqAVQxiX4qoEPZ7FDvng94yTNAJ4/HtfeHn0ianwTSpJhMeEsATXpGj0cwkn8+tT+py7Nj+tRWgA4ls0O9ez7gJd8AnfzPPQRRAtfjt34lr+YR0FAl7wCN7Iff/RCpqp/a//dxR0kAtKSKFwFVrZOrAOjQwqYjIKFBQJX21P7boxbo00eTtuTr9n9MBujCbz2SdYrIeXQnSQboFArLJGF2qHfPB7zkGaDpayYCG2mPxpW5WIL+fvZa6XHqNVPMqgTQqRQioC4l3wC9+O8Rbq/7aPzvqDidyAC99ctRO/WtBL/nPkRaq09Hh7e87XuSUyObTmGpZHrbJpDQIKDVLO7Di1ZhfJOyloAOEVC/HZCaCUCfTstA3iwDanZfMZDQIKAV7LkPZoOVvNkFlCXUu+cDXvIW0ItHF94mVxDQkCRvAdVlrQE9bXRnRpDQIKAWrT2gQwTUoISAagDU4NahIKFBQC2aBkBV0+t9eD7gJQQUAQUtIaAaAFWs//Dh+YCXEFAdgMqn1/vwfMBLCKgmQA1tvgwSGgTUoukBdGhq82WQ0CCgFk0ToLLp9T48H/BSdwBVbNOkC1DJ9Hofng94qTOAqrZp0gboEAE1IXUGUNUUEo2Amti+HiQ0CKgBMw/oEAH10AGpGQM033fp4tHb/vtDZN8lav+mSbLa48NP5Ns0mQXUQHwFkNAgoJWt2HcpRjDdnClfJJfKt9sBdIiA+ucAw4AWS4ojBG9/YvJ49C96/6aFP4zlj1mp4vkVdD48H/CS34BSmzIkOy6RD4r9m9JlnxeP3m4H0CEC6p0DzAJKbWtDLSbO929Ka/h4pxw7gGoPAAISGgS0HaD5/k05oNmuN6YBLVvjCfP5gJf8BpSp4untGJL9mzJ+idkCVLmEDubzAS/5DSjTScoALfZvunj0lo+Q/tL+bJsm44Bqj1ADEhoEtLIV+y4xu4dl+zdR2zI9buE1E7dAyYfnA17yHNBi3yUKUGr/JiIn8ROSbZrMA6o5Qg1IaBBQi6Yd0CECqlNCQPUDqjOEEkhoEFCLph/QIQKqUeo4oM0pLANUY4wvkNAgoCpTZ3Tq47QxR8JVI3lkJG2ADhFQfVI3AdVBYRmg+mJ8gYQGAfUc0CECqk1CQI0Aqi0IHUhoEFCjgKoiI2kEdIiA6pI6CagmCssA1RWEDiQ0CKj3gA4RUE0SAmoIUE1REkFCg4CaBHRkBVBxlTzM5wNe6iKg+igsBVRLlESQ0CCgAQBKCPXg+YCXEFBTgOoJ4wkSGgQ0CEC1REkECQ0CahBQmk/DgA4R0PYSAmoS0PZREkFCg4AGAuhpBLS1hIAaBbR1lESQ0HQR0LV+v38tdXzu1z4j+VidEUxA24fxBAlNBwFd6++bXNhboHhh78s+I/lYnVFVQBk+LQDaNownSGi6B+j6EQLh2tzdRXlKAOU/9g9Q1RpkMM8HvAQD0HO79uR/k388SgDlPvYS0JZhPEFC00VA901IvZ6TOEkB5T5WZwQV0LZhPEFC0z1ASVtzwrQ2Y0Dpj58fWUkKp9RGnzYajU7bNTIkjwbe2gMam/qXULEEjfi0XIK2jDMLslTrXglqrYp3AKh0BR2Y5wNeggLonhxTBlDuY3VG1QAduQBUtoIOzPMBL8EAVHiflACq/TVT1EVyAWiLOLMgoekeoMIb+QRQ7S/q3QAqWUEH5vmAl4AAmo9pJv2iDFDNQ50jV4A2jzMLEpouAlrN1BlVBNQghWUSAtpYQkCtANo4zixIaBDQ0ABtHggZJDQIaHiANo0zCxIaBNQMoPE4vBtAGwdCBgkNAhogoA3jzIKEBgEND9CmgZBBQoOAhghos0DIIKFBQAMEtGEgZJDQIKBGAE3mKjsEtEkgZJDQIKAhAnoaAW0iIaDWAG0UCBkkNAhomIAqV8kjoGoJAbUJaP1AyCChQUADBbRBpG6Q0CCgJgBNFxy7BbR2IGSQ0CCgoQJaP1I3SGgQ0HABrRsIGSQ0CGiwgNaO1A0SGgQ0YEBrBkIGCQ0CGi6gdSN1g4QGATUAaLZrmHNA6wVCBgkNAhowoDUjdYOEBgENGtBagZBBQoOAhgxovUDIIKFBQAMHtEYgZJDQIKBBA1orUjdIaBBQ/YDmW38DAFRYJY+AqiUE1AGg/Cp5BFQtIaBOAK0cqRskNAho6IAOEVAoDkBA5YBWjdQNEhoENHhAK4eSBwkNAqod0CJ+FxRAK0bqBgkNAho+oFVDyYOEBgHtAqDVInWDhAYB7QCgFUPJg4QGAe0EoJUidYOEBgHtAqDVQsmDhAYB7QagVULJg4QmdEAv7H31++0CSkWJhwNosSEjAqqWnAB6pN/v3/xpBBQBnS65qeLX77up35+7+V+6DWiVSN0goQkf0MievW9XxOibvmUD0BFUQKdH6gYJTScAjeyZv4qq+lfXKUbVGU0B1CmFZYBOC4QMEppOALr+zdf3+y//3Zv6c/s6DOjUSN3M0bzEzD06GJKjNiihc+41pH7/Rv8V3zYM6AgyoFMCIadHMjRZToHwFASg63HVnr5purA3iQxvFFDHFJZJ0wGlMBRPlBWmmh4dDMkFoBf2zr0pLzUv/PZrzZegriksA7Q0EDIHn/JEHlKIqPkD6Hq9rnvYgJZF6hZKxtKHQDMKETWPAH3sU2mh+c2/qV56BguoKhCypG059SFIW6RAUPMH0LzZWav9GSqgikjdWWFY+yFMaZCCpBASoF+/44437Jr79TuIvaGPgEojdVOMNXkIHKJAUPME0HO7+pS9phafzQBl+AQIqBCpW0d3R5kESAohATp57P5P7pr72/uJfbpub0mdkdeAMks8y/pFdR5CUdUDQc0XQKNO0l1vrNc3ChxQhlCu/djmIQTxDt8FoM1NnZHngKaEKt7Gt3gI2hO0LdkGlLxiWn/s/sw+ZeE1E3xAsyWeRgo8jUWyC8k2oOTN0oW9eSfJRi/eA0DjSl76kl3DQyjr0wOhEBCgpP25ftcdmdVsjKoz8hzQiFD5iyUtD8HnUdDw26DLo1IygEgjw2+F2r1YRUBb2ymlLY9Ow7elpaV5wx6Ku0toCqM6SffTZqGT5EEJukSsyiLkdlJSiEIsJgGVoFQHyVInCT6gBE9VIGStz0d8iwWEQkCAUh0kS50k8IDGeA4VgZA1Px//5pH41QZVZ+QvoBGfyUGFVfIapBoTTEFICKhjiZSf6YEVQJOXTloTNCpZr+JtjyQtLwOgUC3F9XsG6NRV8nokryY62QbU+kgSbECT9mcmWQKUaooCoRAQoNZHkkADmvaPckCnrZLXJvkzEy/4NihgQJey/nsuiXFmzT0fT2biIaDOpJxPN4B6MhPPEaD/+b7du3db2d0OLKA5noykXONp4vn4MBPPDaD/nPaR9nQXUIpPRrIJKE8oAprao/25N0f9pa/v6tfYOCwsQGk+WUDFNZ4mnw/4qaIuAF0/koK5VmfjsGaALi//G0RAGT5ZyS6gzOAnApqYzY0bYALK8skBOlJ/SyOPTrH1U4cBXT/ScUDz4XfpVSWRkA09OshzmR21QZPe0VrdXpI6I48AXaKG32VX2Qd0IHtt31VAnyUff6L/mujvfbteW3PnBnVG/gC6RA+/S69SR0I29ujgzmW2DajtCcsQAZ16lX1AJa/tOwqo7QnL4ADlRzdlVykjIZt8dKVv7bsDaDtTZ6QANOITFqDC6Kb0KheAAp3LjIBalcThd+lVqkjIhh8dxE0bHQEad5UGj33yrw23QYEBWrz/nHLVSL6EzvijgzfZ3gmgF15vq5MEDtCKV7kCdKAYVuoYoPf2+zf1+y/vx0PyHQJUMT9EepV0CZ2FRwdtsr0LQMlY/PqRubsv7DX+oh4UoKr5IfKrHAEKbbK9C0DjEc57+/ssTBYBBOiScgKTAlDJCiVLj058a99BQMlwp/mxeFiA1rvKHaADQKtB3FTxEZdr/WvNA0r4BAIoO3+pEqDiEjprj45/a98tQKPq/c2Tc7te8e1zuzoDKDd/qdJVYqBZe48OzGoQJ4DGYN7bn+tHpWg3AOUn2IEHtHRcKXhAJ8/8zmdIX75/c81oH+qMwAPa5CphjafVRwdjNYgbQBNbr0enx4AKE+wqJugU0IFyXKkrgNY3dUagAWX2t6mTIL8I2TKgEFaDOALU0rp43wGlhjztPzryx/3O9m4AtbUuHgagkinKvgCaV/PdAtTWuviYT+eAyqYoV05wqF7/YQkax8uVXABqbV08BEDFHcJqJTg87RpQyS5joQNqbV08EEDbJMguoXMCqLCxffCAWlsXDwBQxQzQGoAqp9dbLNUchl5w1Aa1si5+2T2gqhmgngHKvBINHFCL6+ITPr0HlCLUHaATV8uVbANqc128e0CVM0BrAWojxtd0ydFyJduA2lwX7xxQ9QxQDwFVxaMNDNB2ps4oaEAtxfiaJjlZrhQwoMuuAS3ZY7EmoLZifE2V7C9XcgToM3ft3r37jWbH4lM+HQKqIcEMUGshlKZI1pcruQH0URtj8a4BLd0EtCag6aC8e0CtL1dyAuhav//ab02e/UTf6Fi8W0CnbALqLaADy8FrXAC6fiQtOh81uuQjKEAl0+sdAWp5uZILQC2NxTsFVJwC2hZQuyGUyiRubB4B9RDQCrvUVpMgAmp1uZKjKt7GdLvQALUdQqlUsrZcyUkn6dH+y8gbpmeM7s2U8ekC0CrbKFeTmCPrEWpKJFvRlZwASlYcv3z3Tf26Bag/gGpLECygBaEBAjpZv29Xv9+fe1NNPn0BtNo2ypUk9shBhBq1JB34DATQGLaacPoDaNVtlKtI3IkOItSoJSvRldx0kmp23hHQ7AAUoFaWK7kAtPbbJb8ArbzPdxWJP9FJhBq1ZD66kpsSdO7ukAHVmaBw4kgxv94NoNxakEAAnay/b+7m+2P7lLn3oK4ArbMR/XQJPKAcoUEASi37MDiS5AbQmvt8T5UkJ7oKAKKSzEZXclLF32VhyUfOZ3CAOgsAopLmVcNKvgLa3NQZAQG0ZBJ9uIAaja4EBdC1Pr3dcnaUNAaKz9UZQQFUd4KyE1ccBgBRSObW0zkCNN5+kVrysdbfF9F4LX+0xnX31RnBALR+pIRpkhTQFZfxFeSSsfV0bgDlt19cP0LYzHAsjh7lOlHqjEAA2mQj+imSClCn29dLpXkzy5WcAJpsvzj5Rr794rlde/K/9NG93Ix7dUbdAnQFIKCSYSVfARXng57bRT64sHcPe7R+ZHdezD4/sonaTvG2vPzV1E7bsohPK/ZkZKNRiTNcGRlW8tSmzKhf6ydIXssexR8kFX5i6l8ChBK0YaSEJiVoXIYCK0EHwrCSvyVoRUCT06mekjojAIA2DeXRFNARPEBLBz79ATRfzZltw6iq4icUrzUBLfi0B6juBFUnrmSEOnuqakn7ejongD57X//V7x889r54E8bBt4pu0b4UUPrIF0Cbh/JoBihHKBBAJ/PKcSV/ABW3YFS8ZkoYpd41qTMCAKjuBJUnrsgIhQIoU4h6CqhkC0b5i/qY1PUjxco6dUbOAW0Ra6YpoE/CBFTvciUnVbzEssHNpD7PBz7v7TPb46gzcgxou1AeTQFdAbE7uETSGP4LCqDVTJ1RNwFdAbE7uORA33IlBFSHJF+FZAVQEJsviwfzupYrIaA6pJaxZpoDugIVUG3LlRBQDVLbYEgtAF2BsTu49EDLcqVAAaX4tAGo7gTLT2QAlU4OhQGoluVKCGh7qXUwpJaAgtnbVpA0LFdCQNtLrYMhtQJUNjkUCqAalishoK2l9tG62gGa1PIwAaULUQTUDaAagiG1BVSYewcI0LbLlRDQthIMQAHtbSscyd7aI6C2ANURras1oCugAW21XAkBbSnpCIbUHtAVUHvbikfNlyshoO0kLdG6NAC6AmpvW/GocXSlMAFdXv6sHUD1BEPSAyisrUP5Iy52DQJqBVBN0bp0APqkevoyCECbRldCQNtIwjo5h4BmQ0o2nmpDqUl0JQS0haQrnJweQFfAA9okuhIC2kLSFa1LE6CqyXdwAFWNKyGgWqHJDrSFk9MGqHzyHSBAFeNKCKhWaNIDfeHkdAIKbmdG/qBmdCUEtLEEEdCMUNcUlkn1VoMgoE0ljeHkNAIKcmdG7mC+zmoQBLSppDFal05AQe7MKBxUXw0SJKARn8YB1RlOTiug4uxQgICW7eGEgGrhSWc4Ob2AwtyZkZeqrgZBQJtJWuMdagcU5MZ3vFRtNQgC2kzSGk5OM6A8oUABpUbnOwbosnlA9cY71A0o2I3vuKOc0M4B+jXDgGoOJ6cfUGZuE1hAB1l3HgHVy5PueIcGAFXOHAEG6NTYIAhoA0m9Tg4OoHD3FeOOhLf2CGhbaLQH5DQCaEEoAApLpdLJ9gECumwcUN0JmgFUPnMEIKClk+2DBPSzRgHVH5DTEKDSmSMQAR2UTLZHQOtKBuIdmgIU9LZN3IEq9AICWlfyCdCEUDgUlkltN3FCQBPj13HCBjQmFBCFpZKxkN7dAtQAhQYBBb5tE3swbyikd5cANRKQ0ySgfMhE5xSWSuJcZgS0nmQk3qFRQEuDekIDlJ8oaj7nwAA1E5DTLKDgd8XhDhrukYOAEjMT79AwoE+OlFNHIAKqP2IyLEDJXDtTgBoKyGkaUA92xWGP5lVvRRHQUslUvEPjgCqnjgAFlCYUAa0sGQvIaQFQxdQRqIAOFG9FEdAySboS3hdA82oeFIVlkr6AtB0B1FzEWCuASiN+OaewVNIVkLYbgBoMyGkHUNnIPAAKyyR+pigCWiIFAGhciIKjsFQyPlU0GEBNBuS0BqgvS+Zp0xDvsxuAtkUNBKClw0owAZ2YnSoaCqBGA3LaBNSTJfPMUaUdHnwBlPBpAtDWqEEB1Jsl8/TRvOydEwJamNmAnHYB9WbJPHMk2fYWAS3MbEBOy4BSXSUgFFYAVPLOCQHNzXDEWNuAxoR6suCTPip9K9ptQM1SaB1Q+bASeEBNzMQLAlDTEWMdAOrNgk/uxHndM/ECANR8QE4ngHqy4FM4UfNMPAS0nWQQUGFYyQ9AB3pn4vkPqIWAnI4ALR/4BAyodH0yCEDVdiqz5eWvxfbV3E63s6WW1+u3J/UZmTzipSVtUX3pWStB4wJUZwlqIyCnqxI0XU8HermS8sT5+ZIuPdwqXj+gulCDCegKTahXgA70THTyHVArATldAroCfLlS+YntJzp5D6g21OACCnq50pQTW0908hxQOxFjXQMKebnS1BPnZV36rgBqKSCnc0ABL1eqcOJ8my3HENB2ki1Amc5SI0wMSdVOLF9dFyygtgJyQgBUINQrQMtX14UKqLV4hyAAXeFGljwDtOk8Eo8BXeocoE8q39r7ACjz7h4qoAmfWgC1GO8QDKAAJ9vXTEO6eClUQPWi5geg4Cbb105DsngpSEBtxjuEBGiOqK+AiqP0gQKqGzVvAE3reX8BFRANEVCr8Q6hAQppLnPTNJRd+jAAtRtODh6gcOYyN09jfl7aY0JAtUquAOVf3HsIaIFoeIBajncIEtBkLrPzqaJt05g2TO8poHYphAnoivKtqE+AEkSDA9R2vEOwgAKYKmo6Z7uApny2BNR6ODnAgK6kFT0CCgfQJQSUORiNSrv0CKhlQJfsh5ODDWjkXQ5RBNQhoC6idYEHlEMUAXUKqCHU/AZ0MqBqegTUHaBOonV5AeigQBQBdQioMdT8B3SQ1fQIqDNA3UTr8gdQob9knCAElD5yFK3LJ0AHA/61EwKKgLIHjgHlEUVArQHqKlqXb4BOmJoeAa0MaMZnQ0CdBUPyEFAKUQTUEqBLCGgdQLOa3nD4ZAQ0syV3wZA8BTRH1CRBCGhqSw5jzXgLKLGSHhMCWlhbQJ2G8vAa0MGELkcRUEVG7QF1SKHngA6ouh4BVWTUElC3sWb8B3Qga48ioJS1A9RxKI8gAB1IGEVAc2sFqGyOMgJaH9ABzygCmlsbQKVzlBHQRoBOGEYR0NxO0XzWBtQGap0BdJAzqmMlEwIKYCP64AAdyBhFQJsBCmAj+hABjY2BFAFtAujSEgJqDtAJXZJ2HtDlBoAugdiIPmRAicmapJ0E9LN1AS2ZwISA6gOUGA8pAloB0LIJTAioXkDJwYiiFAGtBKhF1BDQ+O9oan2PgGYGZpfaLgEa24jDtBOALtcFFM4utZ0DlBzRkHYE0I/XAlSYAYqAWgU0+R9flmpOfroEFNCl5P0SEAo7DCixEWMI6DDnEwqFHQc0OeAo1Z28SgIJ6BKwLewQ0OKffHHaRUCXoG1hh4By0mgkcGoqZ4CAqkbfEVAwgGYmgNoBQNWj7wgoOEDTI55TnZvuQAN0SR0GHgGFCmhmIqjta39QgC4twdw+BAFVS9ITZaQ2jC1qDdCIz2mAxnxCpBABVUtTTpSjWkYrWEBlrz6BUIiAqqXqaShZHfkAaF67Q6QQAVVLDdPQDuhav9+/VjxiP24K6BLV+IRIIQKqlkznXBHQtf6+yYW91/JH7MfNAP3AEtM3gkghAqqWYAC6foRAuDZ3N3vEftwA0A8Qg7+uAwFVSzAAPbdrT/6XOmI/rgzoW4h9IDcgqCGgjSQogO6L/l7Yu4c9Yj8uB/Q3I3sLZQmcpTPqwVCIgKolGICStuYkb23mR/THz4+sJIUY0MxOMVaeNRraRAegsal/CUkYmsyYI6s/SN0SyJsKyQHVANVQxSOgYUpQAN2Tg0kdsR8joF2UYACq4TUTAhqmBANQDS/qEdAwJSCA5mOaSb+owVAnAhqmBAXQaqbOCAENVEJAYUsgbyokByCg7SSQNxWSAxDQdhLImwrJAQhoOwnkTYXkAAS0nQTypkJyAALaTgJ5UyE5AAFtJ4G8qZAcgIC2k0DeVEgOQEDbSSBvKiQHIKDtJJA3FZIDtAJaMqU+VAnKfYQuIaAIKGgJAUVAQUua2qBoaGYMAUUDbQgoGmhDQNFAGwKKBtoQUDTQhoCigTYEFA20dQTQ8UPbrzmhU9KfIkpSSQ+g4+OwpfF1vV5vs0ZJf4ooySUdgD60rdfbeCNcaXzoWO/ySNypS9KfIkoqSQOgxyLYezNSaEBIZ7bNXLqV/CYvea8eSX+KKCml9oCeme3tmJyVNiVgSOevjLmNTtiqR9KfIkpKqT2gq71Nqo4EGCl2wqKkfG0m6U8RJZXUBtCHrupt2BGlFhfSD8xuhidNxgTatLKIfpibW0v6U0SpVGoBaNzo621JC+lFOh/H0viPkx8l6TZtmeT1yLHeFSeaSfpTRKmiVB/Q8UNXXX7DCZJIVABHdOy4jpTE57dFSQKRsh/lgRhd0hVM6pHx8YaS/hRRqur6uoCOD86mveVjUaLjO3szOyLcext6vU0Pw5BOkK9HvuWx3iWHx6/k6pFmkv4UUaoo1QSUlMEz26/qRakc623689nelhNnD5/ZRurYv4QhkTZM9PUiThejwpRQm1QWW5IuVDNJf4ooVZRqATq+PuJiR/SPB6OSKvqvd8XhqD0bpfeDQw/DkFKejpFvefCGE6uzm+6Mf5HFGFMzSX+KKFWT6pWgi9mL/+gfL42pj8jYCUlKLO0GkldP0U+Sef/UTNKfIkrVpHqAJkVx+o+o7Nqw/dIsNSBSavGbtPNXRm1UUme8sL2kP0WUKkk126DHeumL/6hB+94HZrNGHyApNdINjPDd8vltm/7icCPpne8ouezBlzTJ7MGfONHgKhDSn/2CI2/UBDQfO10lPejx299+YpLlI5FKrjImpRb9DjeTFoBknKKQfvWh7S8+pLjq+7PclZQWdUnj1/cAAAjRSURBVBWZEeRKmZGrmHYIdR8HL7tsh/SqH/n57dccVyRI7v6wXCq7jUbu+BWL3mCvqvuaKR2FSsiYJN36nVJpTHmdlchcv+OKBMeU1/m8Sm5j8sCPcacsRpX++PrLLj9M7oMtXzPpXduy127iVSSHzfIU33m9UGJn0qGDs+S1vvIq9nvkUnwfWyXSj/8Uuegl0gTfpbwqunvd7rDoDa7QrQDomMknfYV6XdzoO8vkw0qM/2gpVgqvM1edV141YSHkJHbAjFQ5i5kSp5i3UCkpunjjq7ZJpUkyQLVTlmKUVe8KyotsipFtPiFK8evjK7YVj4S9atOhA0UpRF0V3eH2Weo+6FtcjO8+15i71+4Oe97gbTqgXD5xUfzgbFy1cvlQEu91+irO6/RVnNcZifU6K2UTYCaZN19wVYo5ye3QnXmKtHRmNrq7M7MUkbmUHBYeY7R4NPXs2yWXRS3iQw8Wc8QpKbrdjTeMr8shFO7j/JWZxlwVK/lXo6+KPt5J/qSXsXev3R32vMHbdEC5fNKx742HxXwoifc6cxXrdfoqzuu0xHk9lX70N5IWwSrtQPKr7vV+Mm4sxCOhk3zwnpWibFZ7m79AS1uzNsbizKtm8x8RfRmZlvKufEyAkRZjH+etF1o6sIO8C8vvn72PKJ+IjOOClEyAOdZj7z55jsmb3/h3yktSdySS1B2ZJHNHmobEG1uzrERvZOhKvJFIUm9I+awAKJdPnNrMDlk+tMR5nZJ4ryfSz8UNdM7rtMR5PZF+Nm0RnL9y5qepOihqZ12RNtG4J0JL4z89Eb/TyLAn0uG8jbE4c+Ni75L3pEUDdVnizpnZ7AsU0gvJ3R+gmi/0VeSQchUtRV2Dy+If4o2c9IJ4zsRq0YqKbzFt6iymo7r03aeSxB2pJHNHKkndkTWrRG8UeQneSKSxzBtU65j3Btf2zKwM0Lg9/TCfz+TYzJYTRVObzoeWOK8X0r/yXifSF9MGOud1WuK8HieYtQhWe5se5uZmp9JLX3TNiexHxkkkqfMvuiZqp1AXZhqpGOLHtVO8bJFQNaYnMqZS9AO6M35YW6WZcaMJRV7XXxo1lX6ZfkGdJziz4/PbNswyPZS0qbMaJ8q2NnNJcEcqnZe4g0pDcEcqSbyRXyV6I5UWJd6g8uK9obASQNP29CuFfI7TTW02n0ISvH68SJD3+vG8gS54nZY4rx+nWgQHbuTmZjONhfhALk2yJ81p74keCenNbdghXpbMjT7D1Hk703oqaqxHD6u4SyazRf5ZZdJq+psVErw0/nEeY/oPaVMnfdXG9C2yVpDgDqaBxLqDbzvR7ijy4r1RXCV4I5NWRW8weS0qKnXW1IBm7entYj5MU5vNh5J4r2fSS7cJXs8b6KLXi7a76HW2RcD8iBlplfGRpB2xU9Ced90lV8e8SS4bf6E4ZqWkMpcmSBJiQaOk2IeyBJ938LLLb+DuP2vqJK/aYv/wkuAORlrlCleh7bSTl8aCN4qrBG9kEuldb+V/DlRex+Tdds7UgGbNleeJ+TAtGTYfSuK9nktjwetFA13wOtt257zOtAjY2o6WyO2cvT5PkpY+dyK9L06L7YqDbBVfXHb2cDIuJ161iatC6avOzCrungyIMR5mmzqrbCmZNXWi/HYwbmRaQXzlX0icO2iJc0cmxbUD6w36Ks4bmbQqeoO+6gz/8l9q0wHdLObDAMrmQ0m817kGOu11qoHOe51tu7Ne59phx3rsbz+Toh/JCw+wfdxMOtCbuZopGHItaj2TTtvGw7IUH5glDezNsquiXM5eKb8P8peuAAop+oIzV9Nt0EI6e93Gq2fZMihr6pD8NrC3QbeCOHfkkuiOXOLdkUuLEm/kV4neyK8SvVHcIecNhakBLdrTQj5MU5vNh5J4r1OS4PVJ3kB/N+/1QiJfi/E61w6LjjbLpAScwrmUJIzj59qGG3iHUJetcpfl0sa4+UIXeMwtCnV8JsUvzWQJbjoYK/R9FE2d89u4u2daQYw76Ks4d1CS4I5MOs9NTGCu4r2RS8krdOY703dYqY6f8popLgAl+WSSPJ9U4r1eSA8IXk+MFByC1wtpwnudaxF8f4dUIgXwjFwi4/jsWLekZSe77HPs8H8uvUcY+aMTPP9L8qveK8wnKKSzv/gz4huYrPL/wTsERxWtIMYdhSS4g7pKcAeToOo2eG/k0lgcB6US5LwhtymAJnWtNJ+8GhbzySTJLI5Ukno9w1fi9eL3wHldaIdJpKjhw918yVWVUiyTxl840eCqOtJEaOrUkkR3tEywTBK8UX6VaFMAzdrTkny4pnZ7ie+vVJKEdphM+hP+x1ByVbUUnUrE2KZOPUlwR9sENUqClQPKt6dNSkJ/pZIktsPaSvpT1H+LQlMnGEmwckCF9rRBSTrveKo0UbQI2kj6U9R/i2IDMxCJt3JApe1pQ5K0gT5dQgvbppWgkva0IQkNTWJTOknS9rQhCQ1NtI5sAY7mqyGgaKANAUUDbQgoGmhDQNFAGwKKBtoQUL1GLSUpP6fKiWgIqE47ew0Cqt0QUF02vrPqDAhks4YhoLpM3L5IZQhoDUNANVmyzm7TFwl8ZMEGmVo/85J4c7VkP6x4o6B43S5VxZN9JGWnoGWGgGoyDtDU4r0rklUJ6WdbeEA3yE5BywwB1WVJFX8+A/SSw/GarM3x8vA4hEVvB9mAI9usIQeURHC8kj8FLTMEVJdxgO6MJ7+m21DFGzrF20uS5TgsoMmODtwpaJkhoLqMBTRdPpnvAJJsO5IsjuXaoJMUUPoU118GjiGguqwqoCmbZYBiH78wBFSXTQU0r7jVgGLdLhgCqssSvlSApu8+Y4oVgNKnoGWGgOqyBEcVoOQ1VNyjjwQFoPQpaJkhoLosXlGdvwcVAE02R802CpQCSp2ClhkCqs1IMNtN71YBOhkfvLTX20i2JFMBSp2ClhkCigbaEFA00IaAooE2BBQNtCGgaKANAUUDbQgoGmhDQNFAGwKKBtoQUDTQhoCigbb/B/SVgF4oeD3wAAAAAElFTkSuQmCC" /><!-- --></p>
+</div>
+<div id="literature" class="section level2">
+<h2>Literature</h2>
+<p>[1] Najafi F, Izadi N, Hashemi-Nazari S-S, Khosravi-Shadmani F,
+Nikbakht R, Shakiba E. Serial interval and time-varying reproduction
+number estimation for COVID-19 in western Iran. New Microbes and New
+Infections. 2020; 36: 100715.</p>
+<p>[2] <a href="https://en.wikipedia.org/wiki/Gamma_distribution" class="uri">https://en.wikipedia.org/wiki/Gamma_distribution</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

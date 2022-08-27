@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Statistical Modelling for Infectious Disease Management - Risk assessment group quarantine</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Statistical Modelling for Infectious
+Disease Management - Risk assessment group quarantine</h1>
+
+
+
+<div id="question" class="section level2">
+<h2>Question:</h2>
+<p>A school class with 25 students has met on the 04.11.2021 and two
+students were infected with COVID-19. Several students were tested:</p>
+<ul>
+<li>First group: 3 persons in the group, tested with PCR on the second
+day after the group event.</li>
+<li>Second group: 5 persons in the group, tested with PCR on the fourth
+day after the group event and with Antigen on the sixth day after the
+group event.</li>
+</ul>
+<p>How likely is it that the two cases did not transmit COVID-19 and
+that no further cases will occur?</p>
+</div>
+<div id="calculating-the-probability-that-nobody-is-infected-given-the-negative-test-results-using-calculate_posterior_no_infections" class="section level2">
+<h2>Calculating the probability that nobody is infected given the
+negative test results using
+<code>calculate_posterior_no_infections</code></h2>
+<div id="inputs" class="section level3">
+<h3>Inputs</h3>
+<p>The function <code>calculate_posterior_no_infections()</code>
+calculates the probability that nobody is infected given the negative
+tests. To that end, the following input values are required:</p>
+<p>The input <code>negative_persons</code> denotes the number of people
+without the infectious persons and <code>infected_persons</code> denotes
+the number of primary COVID-19 cases in the school class. Furthermore,
+the event type <code>event</code> describes the setting of the meeting.
+In the package the event types <code>school</code> (school class) and
+<code>day_care_center</code> (day care center group) were modeled.</p>
+<p>In addition, the information about the conducted tests
+<code>test_infos</code>, the conducted test types
+<code>test_types</code> and the number of persons which were tested at
+each days <code>subgroup_size</code> are needed. Each row of
+<code>test_infos</code>, <code>test_types</code> and each entry of
+<code>subgroup_size</code> describes one group of persons, which were
+tested in the same way on the same dates. <code>test_infos</code>
+describes in the first column how many tests and the following columns
+on which days after the event they were conducted, and
+<code>test_types</code> contains in each column which kind of test was
+conducted at the corresponding date.</p>
+<p>Beside this, <code>distribution</code> as well as <code>info</code>
+are optional inputs, which can be set to use an own, custom prior
+distribution and own custom tests. <code>distribution</code> should be a
+probability vector, containing the probabilities that one COVID-19 case
+infects 0, …, <code>negative_persons</code> persons. For
+<code>info</code> a data frame with one column containing the
+day-specific sensitivities of the considered test after infection has to
+be created and the column should have the name of the considered tests.
+The specificity of the test is not affecting the likelihood, since no
+positive tests results are assumed.</p>
+</div>
+<div id="methodology" class="section level3">
+<h3>Methodology</h3>
+<p>The function <code>calculate_posterior_no_infections()</code> uses
+<code>calculate_likelihood_negative_tests</code> and
+<code>calculate_prior_infections</code> to calculate the probability.
+The whole bayesian statistical model behind this function is described
+in the paper Jäckle et al [1].</p>
+</div>
+<div id="output" class="section level3">
+<h3>Output</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>negative_persons <span class="ot">&lt;-</span> <span class="dv">23</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>infected_persons <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>event <span class="ot">&lt;-</span> <span class="st">&quot;school&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>test_infos <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">2</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">2</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>test_types <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>test_types[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;PCR&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>test_types[<span class="dv">2</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;PCR&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>test_types[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Antigen&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>subgroup_size <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">calculate_posterior_no_infections</span>(negative_persons,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                                          infected_persons,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                                          event,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                                          test_infos,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>                                          test_types,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                                          subgroup_size)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(prob)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.825621</span></span></code></pre></div>
+<p>The resulting probability for no further infections given the
+negative test results is around 82.6%.</p>
+</div>
+</div>
+<div id="calculating-the-likelihood-using-calculate_likelihood_negative_tests" class="section level2">
+<h2>Calculating the likelihood using
+<code>calculate_likelihood_negative_tests</code></h2>
+<p>The function <code>calculate_likelihood_negative_tests()</code> is
+used to calculate the vector of probabilities (likelihood) that zero
+positive tests are observed, given different numbers of persons infected
+by the primary cases.</p>
+<div id="inputs-1" class="section level3">
+<h3>Inputs</h3>
+<p>The <code>calculate_likelihood_negative_tests()</code> uses some
+inputs of <code>calculate_posterior_no_infections</code>, namely
+<code>negative_persons</code>, <code>test_infos</code>,
+<code>test_types</code> and <code>subgroup_size</code>.</p>
+<p>Beside this, also <code>info</code> is an optional input, which can
+be set for using own custom tests.</p>
+</div>
+<div id="methodology-1" class="section level3">
+<h3>Methodology</h3>
+<p>The likelihood function as part of the bayesian statistical model is
+described in the paper Jäckle et al [1].</p>
+</div>
+<div id="output-1" class="section level3">
+<h3>Output</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>test_infos <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">2</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>test_infos[<span class="dv">2</span>, <span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>test_types <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>test_types[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;PCR&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>test_types[<span class="dv">2</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;PCR&quot;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>test_types[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Antigen&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>negative_persons <span class="ot">&lt;-</span> <span class="dv">23</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>subgroup_size <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">&lt;-</span> <span class="fu">calculate_likelihood_negative_tests</span>(test_infos,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                                                  test_types,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                                                  negative_persons,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                                                  subgroup_size)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(likelihood)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 1.0000000000 0.8338649049 0.6908141737 0.5683275826 0.4640775090</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] 0.3759211840 0.3018929462 0.2401964946 0.1891971417 0.1474140667</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] 0.1135125689 0.0862963205 0.0646996202 0.0477796460 0.0347087085</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] 0.0247665041 0.0173323682 0.0118775284 0.0079573574 0.0052036265</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [21] 0.0033167587 0.0020580817 0.0012420813 0.0007286544</span></span></code></pre></div>
+<p>The output vector shows the likelihood probabilities for negative
+test results given <span class="math inline">\(0, ..., 23\)</span>
+persons infected by the primary cases.</p>
+</div>
+</div>
+<div id="calculating-the-priori-probability-distribution-of-further-infections-using-calculate_prior_infections" class="section level2">
+<h2>Calculating the priori probability distribution of further
+infections using <code>calculate_prior_infections</code></h2>
+<p>The function <code>calculate_prior_infections()</code> calculates the
+a priori probability of how many people are infected in a specific event
+setting.</p>
+<div id="inputs-2" class="section level3">
+<h3>Inputs</h3>
+<p>The <code>calculate_prior_infections()</code> needs the same inputs
+as <code>calculate_posterior_no_infections</code> except the
+<code>test_infos</code>, <code>test_types</code> and
+<code>subgroup_sizes</code> variables. Currently, the event types
+<code>school</code> (school class) and <code>day_care_center</code> (day
+care center group) are modeled and can be chosen. Beside this, the
+optional inputs <code>p_one</code> and <code>infect_average</code> can
+be set in order to model an own, custom event scenario.
+<code>p_one</code> defines the probability that a COVID-19 case infects
+at least one of the persons attending the event, and
+<code>infect_average</code> the average number of infected persons,
+under the condition that COVID-19 was transmitted at the event.</p>
+</div>
+<div id="methodology-2" class="section level3">
+<h3>Methodology</h3>
+<p>The priori probability distribution as part of the bayesian
+statistical model is described in the paper Jäckle et al [1].</p>
+</div>
+<div id="outputs" class="section level3">
+<h3>Outputs</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>negative_persons <span class="ot">&lt;-</span> <span class="dv">23</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>infected_persons <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>event <span class="ot">&lt;-</span> <span class="st">&quot;school&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">calculate_prior_infections</span>(negative_persons,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                                    infected_persons,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                                    event)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(prior)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 7.743990e-01 1.266298e-01 5.061046e-02 2.384428e-02 1.194404e-02</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6] 6.134207e-03 3.172921e-03 1.635224e-03 8.333112e-04 4.173381e-04</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] 2.042826e-04 9.720703e-05 4.471282e-05 1.975681e-05 8.325528e-06</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] 3.317071e-06 1.236190e-06 4.250407e-07 1.323857e-07 3.641152e-08</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [21] 8.515680e-09 1.593207e-09 2.128086e-10 1.529138e-11</span></span></code></pre></div>
+<p>The output vector shows the prior probabilities that 0, …, 23 persons
+are infected by the primary cases.</p>
+</div>
+</div>
+<div id="visualization-example-of-all-date-inputs-on-a-time-scale" class="section level2">
+<h2>Visualization example of all date inputs on a time scale</h2>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;2021-10-05&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tests_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">c</span>(<span class="st">&quot;2021-10-06 PCR-test&quot;</span>, <span class="st">&quot;2021-10-07 antigen-test&quot;</span>, <span class="st">&quot;2021-10-07 antigen-test&quot;</span>, <span class="st">&quot;2021-10-08 antigen-test&quot;</span>, <span class="st">&quot;2021-10-10 antigen-test&quot;</span>), <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>))</span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a> <span class="co"># Convert test data frame into arrays</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>   test_dates <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>   test_colors <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>   test_positions <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>   test_text_positions <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>   test_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;event&quot;</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>   test_label_positions_x <span class="ot">&lt;-</span> <span class="fu">c</span>(date)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>   test_label_positions_y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.6</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>   test_label_colours <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> (<span class="fu">nrow</span>(tests_df <span class="sc">&gt;</span> <span class="dv">0</span>)) {</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(tests_df)) {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>         test_list <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(tests_df[i, <span class="dv">1</span>], <span class="st">&quot;, &quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>         dates_group <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>         <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(test_list)) {</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            test <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(test_list[j], <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]]</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>            test_dates <span class="ot">&lt;-</span> <span class="fu">c</span>(test_dates, test[<span class="dv">1</span>])</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>            dates_group <span class="ot">&lt;-</span> <span class="fu">c</span>(dates_group, <span class="fu">as.Date</span>(test[<span class="dv">1</span>]))</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            test_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(test_colors, <span class="fu">as.character</span>(i <span class="sc">+</span> <span class="dv">1</span>) )</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>            test_positions <span class="ot">&lt;-</span> <span class="fu">c</span>(test_positions, i <span class="sc">*</span> <span class="fl">0.9</span> <span class="sc">/</span> <span class="fu">nrow</span>(tests_df))</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>            test_text_positions <span class="ot">&lt;-</span> <span class="fu">c</span>(test_text_positions, i <span class="sc">*</span> <span class="fl">0.9</span> <span class="sc">/</span> <span class="fu">nrow</span>(tests_df) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>         }</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>         test_label <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="fu">as.character</span>(tests_df[i, <span class="dv">2</span>]), <span class="st">&quot; persons&quot;</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>         <span class="cf">if</span>(tests_df[i, <span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>         {</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>            test_label <span class="ot">&lt;-</span> <span class="st">&quot;1 person&quot;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>         }</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>         test_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(test_labels, test_label)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>         test_label_positions_x <span class="ot">&lt;-</span> <span class="fu">c</span>(test_label_positions_x, <span class="fu">mean.Date</span>(dates_group))</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>         test_label_positions_y <span class="ot">&lt;-</span> <span class="fu">c</span>(test_label_positions_y, i<span class="sc">*</span><span class="fl">0.9</span><span class="sc">/</span><span class="fu">nrow</span>(tests_df) <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>         test_label_colours <span class="ot">&lt;-</span> <span class="fu">c</span>(test_label_colours, <span class="fu">as.character</span>(i<span class="sc">+</span><span class="dv">1</span>) )</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>   }</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>   df_label <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Date =</span> test_label_positions_x, </span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>                          <span class="at">Position =</span> test_label_positions_y, </span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>                          <span class="at">Label =</span> test_labels, </span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>                          <span class="at">col =</span> test_label_colours)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>   df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Date =</span> <span class="fu">c</span>(date, test_dates), </span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Position =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, test_positions),</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>                    <span class="at">Text_pos =</span> <span class="fu">c</span>(<span class="fl">0.6</span>, test_text_positions),</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>                    <span class="at">col      =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>, test_colors))</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>   df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Position))</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>   timeline_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> Position, <span class="at">color =</span> col)) <span class="sc">+</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>       <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">&quot;Set1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>       <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>       <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">size =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>       <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">y =</span> Position, <span class="at">yend =</span> <span class="dv">0</span>, <span class="at">xend =</span> Date, <span class="at">color =</span> col), </span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>                    <span class="at">size =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>       <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> Position), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>       <span class="fu">theme</span>(<span class="at">axis.line.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>             <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>             <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>             <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>             <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>             <span class="co"># axis.text.x = element_blank(),</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>             <span class="co"># axis.ticks.x = element_blank(),</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>             <span class="at">axis.line.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>             <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>             <span class="at">legend.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>             <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>             <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">30</span>, <span class="at">hjust =</span> <span class="dv">1</span>)</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>       ) <span class="sc">+</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>       <span class="fu">geom_label</span>(<span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> Position, <span class="at">label =</span> Label), df_label, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">label.size =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>       <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">&quot;%d %b&quot;</span>, <span class="at">date_breaks =</span> <span class="st">&quot;1 day&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="fu">min</span>(df<span class="sc">$</span>Date) <span class="sc">-</span> <span class="dv">1</span>, <span class="fu">max</span>(df<span class="sc">$</span>Date) <span class="sc">+</span> <span class="dv">1</span>)) </span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>       </span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>   timeline_plot</span></code></pre></div>
+</details>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="literature" class="section level2">
+<h2>Literature</h2>
+<p>[1] Jäckle S, Röger E, Dicken V, Geisler B, Schumacher J, Westphal M.
+A Statistical Model to Assess Risk for Supporting COVID-19 Quarantine
+Decisions. International Journal of Environmental Research and Public
+Health. 2021; 18(17): 9166.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

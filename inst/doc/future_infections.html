@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Statistical Modelling for Infectious Disease Management - Prediction of future infections in a group</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Statistical Modelling for Infectious
+Disease Management - Prediction of future infections in a group</h1>
+
+
+
+<div id="question" class="section level2">
+<h2>Question</h2>
+<p>A family party with 25 participants took place on the 15.03.2022 in a
+closed room and no masks were worn. In the following days some
+participants start to show symptoms of a COVID-19 infection: one on
+18.03.2022 and three on 20.03.2022. How many further symptomatic
+infections can be expected in the following days?</p>
+</div>
+<div id="calculating-a-prediction-of-the-total-number-of-infections-with-get_expected_total_infections" class="section level2">
+<h2>Calculating a prediction of the total number of infections with
+<code>get_expected_total_infections</code></h2>
+<p>The function <code>get_expected_total_infections()</code> can be used
+to give a first answer to the question. It returns a prediction how many
+people in the group are expected to show symptoms in total.</p>
+<div id="inputs" class="section level3">
+<h3>Inputs</h3>
+<p>The following input values are necessary for the function
+<code>get_expected_total_infections()</code> to work:</p>
+<p>The <code>group_size</code> is the number of people participating in
+the event, including all observed infections.</p>
+<p>The <code>last_day_reported_infection</code> is the number of days
+after the event when the last symptom begin was observed and the
+<code>total_reported_infections</code> is the total number of observed
+infections so far.</p>
+<p>Finally, <code>meanlog</code> and <code>sdlog</code> are the mean and
+standard deviation parameters of the log-normal distribution for the
+incubation time derived from the paper Xin et al. [1].</p>
+</div>
+<div id="methodology" class="section level3">
+<h3>Methodology</h3>
+<p>Based on the incubation time distribution one can calculate the
+percentage of all symptomatic infections that will have their symptom
+onset up to the <code>last_day_reported_infection</code>. Then, said
+percentage is combined with the <code>total_reported_infections</code>
+to calculate the total symptomatic infections. The minimum between the
+result and the <code>group_size</code> is returned, because the
+<code>group_size</code>is obviously an upper bound for the total
+infections.</p>
+</div>
+<div id="output" class="section level3">
+<h3>Output</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>group_size <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>last_day_reported_infections <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># day 0 = event day</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>total_reported_infections <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>meanlog <span class="ot">&lt;-</span> <span class="fl">1.69</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sdlog <span class="ot">&lt;-</span> <span class="fl">0.55</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>predicted_total_infections <span class="ot">&lt;-</span> <span class="fu">get_expected_total_infections</span>(group_size,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                                                            last_day_reported_infections,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                                                            total_reported_infections,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                                                            meanlog,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                                            sdlog)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(predicted_total_infections)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 10</span></span></code></pre></div>
+<p>The output represents how many people are expected to get a
+symptomatic infection. In the example 10 infections are predicted in
+total, which implies one can expect 6 further people starting to show
+symptoms in the next days because 4 infections were already
+observed.</p>
+</div>
+</div>
+<div id="generating-a-vector-with-number-of-people-starting-to-show-symptoms-on-each-day-using-predict_future_infections" class="section level2">
+<h2>Generating a vector with number of people starting to show symptoms
+on each day using <code>predict_future_infections</code></h2>
+<p>The function <code>predict_future_infections()</code> can be used to
+give a more detailed answer. It creates a vector containing the
+predicted number of further people starting to show symptoms on each of
+the days after the event.</p>
+<div id="inputs-1" class="section level3">
+<h3>Inputs</h3>
+<p>Multiple arguments are necessary for the function
+<code>predict_future_infections()</code> to work:</p>
+<p>The <code>last_day_reported_infection</code> is the number of days
+after the event when the last symptom begin was observed and the
+<code>total_reported_infections</code> is the total number of observed
+infections so far.</p>
+<p>Then, the <code>total_expected_infections</code> is needed, which
+defines the total number of expected infections, including the ones
+already observed. One can use the output of
+<code>get_expected_total_infections()</code> or an own estimation based
+on e.g. reported symptomatic infection rates in a population of
+interest. If the output of <code>get_expected_total_infections()</code>
+is used, then it should be based on the same <code>meanlog</code> and
+<code>sdlog</code> as in the call to
+<code>predict_future_infections()</code>.</p>
+<p>Finally, <code>meanlog</code> and <code>sdlog</code> are the mean and
+standard deviation parameters of the log-normal distribution for the
+incubation time.</p>
+</div>
+<div id="methodology-1" class="section level3">
+<h3>Methodology</h3>
+<p>The function <code>predict_future_infections()</code> uses the
+function <code>get_incubation_day_distribution()</code> to get a vector
+of day-specific probabilities of symptom onset, given that a person will
+develop symptoms. Default values of the log-normal distribution for the
+incubation time used in that function are taken from the paper Xin et
+al. [1].</p>
+<p>Starting on the first day after the
+<code>last_day_reported_infection</code>, the probability of symptom
+onset on a particular day, given that no symptoms occurred so far, is
+multiplied by the number of further expected infections and rounded
+upwards to receive the expected number of people starting to show
+symptoms on that day. The probability that no symptoms occurred so far
+can be calculated by 1 minus the sum of symptom onset probabilities for
+all previous days. The number of further expected infections is simply
+<code>total_expected_infections</code> minus
+<code>total_reported_infections</code>. The latter is afterwards raised
+by the predicted number of people with symptom onset on the day
+currently looked at, so that afterwards the next day can be treated.</p>
+<p>When at some point the updated <code>total_reported_infections</code>
+is not smaller than <code>total_expected_infections</code> anymore, a 0
+is inserted to signal that all further expected symptomatic infections
+are allocated and the loop is stopped.</p>
+</div>
+<div id="output-1" class="section level3">
+<h3>Output</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>last_day_reported_infections <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="co"># day 0 = event day</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>total_reported_infections <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>total_expected_infections <span class="ot">&lt;-</span> <span class="fu">get_expected_total_infections</span>(<span class="dv">25</span>, <span class="dv">5</span>, <span class="dv">4</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>meanlog <span class="ot">&lt;-</span> <span class="fl">1.69</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>sdlog <span class="ot">&lt;-</span> <span class="fl">0.55</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>predicted_daily_infections <span class="ot">&lt;-</span> <span class="fu">predict_future_infections</span>(last_day_reported_infections,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                                                        total_reported_infections,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                                                        total_expected_infections,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                                                        meanlog,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                                                        sdlog)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(predicted_daily_infections)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] 0 0 0 0 0 2 1 1 1 1 0</span></span></code></pre></div>
+<p>The function <code>predict_future_infections()</code> creates a
+vector with values representing the expected distribution of new
+symptomatic infections over the days after the event. Up to the
+<code>last_day_reported_infections</code> the entries are 0 because only
+infections in the future are predicted.</p>
+</div>
+</div>
+<div id="an-example-for-visualizing-the-output-of-predict_future_infections" class="section level2">
+<h2>An example for visualizing the output of
+<code>predict_future_infections</code></h2>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">&quot;Erkrankungsdatum&quot;</span> <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">&quot;2022-03-15&quot;</span>) <span class="sc">+</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                   <span class="st">&quot;Neue_Faelle&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">3</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>expected <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">&quot;Erkrankungsdatum&quot;</span> <span class="ot">=</span> <span class="fu">as.Date</span>(<span class="st">&quot;2022-03-15&quot;</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(predicted_daily_infections)),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                       <span class="st">&quot;ErwarteteWeitereFaelle&quot;</span> <span class="ot">=</span> predicted_daily_infections)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(expected) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> data,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(Erkrankungsdatum,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>          Neue_Faelle,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="st">&quot;observation&quot;</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> expected,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">aes</span>(Erkrankungsdatum,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>          ErwarteteWeitereFaelle,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="st">&quot;prediction&quot;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">stat =</span> <span class="st">&#39;identity&#39;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> expected<span class="sc">$</span>Erkrankungsdatum[<span class="dv">1</span>]) <span class="sc">+</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label</span>(<span class="fu">aes</span>(<span class="at">x =</span> expected<span class="sc">$</span>Erkrankungsdatum[<span class="dv">1</span>], <span class="at">y =</span> data<span class="sc">$</span>Neue_Faelle[<span class="dv">1</span>] <span class="sc">+</span> <span class="dv">4</span>, <span class="at">label =</span> <span class="st">&quot;event&quot;</span>), </span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>               <span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="cf">function</span>(x) <span class="fu">unique</span>(</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">floor</span>(<span class="fu">pretty</span>(<span class="fu">seq</span>(<span class="dv">0</span>, (<span class="fu">max</span>(x) <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="fl">1.1</span>))))) <span class="sc">+</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">&quot;1 day&quot;</span>, <span class="at">date_labels =</span> <span class="st">&quot;%d %b&quot;</span>, <span class="at">minor_breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;infected&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;timeline&quot;</span>) <span class="sc">+</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">&#39;type of cases&#39;</span>) <span class="sc">+</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.75</span>,<span class="fl">0.85</span>), <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">angle =</span> <span class="dv">30</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(g)</span></code></pre></div>
+</details>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="literature" class="section level2">
+<h2>Literature</h2>
+<p>[1] Xin H, Wong JY, Murphy C, Yeung A, Ali ST, Wu P, Cowling BJ. The
+Incubation Period Distribution of Coronavirus Disease 2019: A Systematic
+Review and Meta-Analysis. Clinical Infectious Diseases. 2021; 73(12):
+2344-2352.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

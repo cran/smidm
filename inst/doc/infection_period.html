@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Statistical Modelling for Infectious Disease Management - Infection period</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Statistical Modelling for Infectious
+Disease Management - Infection period</h1>
+
+
+
+<div id="question" class="section level2">
+<h2>Question</h2>
+<p>One or several persons start to show symptoms of COVID-19. When did
+the person become infected?</p>
+</div>
+<div id="generating-a-data-frame-with-dates-and-infection-probability-using-get_infection_density-for-one-person" class="section level2">
+<h2>Generating a data frame with dates and infection probability using
+<code>get_infection_density</code> for one person</h2>
+<p>The function <code>get_infection_density()</code> can be used to
+calculate a data frame containing the infection probability when the
+person shows symptoms.</p>
+<div id="inputs" class="section level3">
+<h3>Inputs</h3>
+<p>The function <code>get_infection_density()</code> expects the
+following input arguments:</p>
+<p>First, the <code>symptom_begin_date</code> is needed, which defines
+when the person started to have symptoms.</p>
+<p>Then, the <code>max_incubation_days</code> has to be set, which
+defines the interval length of the distribution output.</p>
+<p>The remaining inputs <code>meanlog</code> and <code>sdlog</code> are
+the parameters of the log-normal distribution for the infection
+probability.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>symptom_begin_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;2021-12-28&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>max_incubation_days <span class="ot">&lt;-</span> <span class="dv">18</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>meanlog <span class="ot">&lt;-</span> <span class="fl">1.69</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sdlog <span class="ot">&lt;-</span> <span class="fl">0.55</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>infec_date_df <span class="ot">&lt;-</span> <span class="fu">get_infection_density</span>(symptom_begin_date,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                                       max_incubation_days,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                                       meanlog,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                                       sdlog)</span></code></pre></div>
+</div>
+<div id="methodology" class="section level3">
+<h3>Methodology</h3>
+<p>The default values of log-normal distribution are taken from the
+paper Xin et al [1]. In this paper the authors made a systematic review
+of the current literature and estimated those parameters based on their
+meta-analysis.</p>
+</div>
+<div id="output" class="section level3">
+<h3>Output</h3>
+<p>The data frame shows for each hour from the earliest potential start
+of infection up to the symptom begin date the resulting density of the
+log-normal distribution. This density can be used for calculating the
+most probable period of the infection.</p>
+<table>
+<caption>values 100 to 109 of resulting data frame</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">dates</th>
+<th align="right">distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">100</td>
+<td align="left">2021-12-14 04:00:00</td>
+<td align="right">0.0122820</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="left">2021-12-14 05:00:00</td>
+<td align="right">0.0124346</td>
+</tr>
+<tr class="odd">
+<td align="left">102</td>
+<td align="left">2021-12-14 06:00:00</td>
+<td align="right">0.0125891</td>
+</tr>
+<tr class="even">
+<td align="left">103</td>
+<td align="left">2021-12-14 07:00:00</td>
+<td align="right">0.0127457</td>
+</tr>
+<tr class="odd">
+<td align="left">104</td>
+<td align="left">2021-12-14 08:00:00</td>
+<td align="right">0.0129043</td>
+</tr>
+<tr class="even">
+<td align="left">105</td>
+<td align="left">2021-12-14 09:00:00</td>
+<td align="right">0.0130650</td>
+</tr>
+<tr class="odd">
+<td align="left">106</td>
+<td align="left">2021-12-14 10:00:00</td>
+<td align="right">0.0132277</td>
+</tr>
+<tr class="even">
+<td align="left">107</td>
+<td align="left">2021-12-14 11:00:00</td>
+<td align="right">0.0133926</td>
+</tr>
+<tr class="odd">
+<td align="left">108</td>
+<td align="left">2021-12-14 12:00:00</td>
+<td align="right">0.0135597</td>
+</tr>
+<tr class="even">
+<td align="left">109</td>
+<td align="left">2021-12-14 13:00:00</td>
+<td align="right">0.0137289</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="generating-a-data-frame-with-dates-and-probability-of-infection-using-get_misc_infection_density-for-several-persons" class="section level2">
+<h2>Generating a data frame with dates and probability of infection
+using <code>get_misc_infection_density</code> for several persons</h2>
+<p>The function <code>get_misc_infection_density()</code> creates a data
+frame containing the mixture probability of all considered persons. It
+can be used to give an overview of the infection probability of several
+persons with symptom onset dates, e.g., one person with symptom onset on
+24.12.2021 and two persons with symptom onset on 28.12.2021.</p>
+<div id="inputs-1" class="section level3">
+<h3>Inputs</h3>
+<p>The following arguments are needed for using the function
+<code>get_misc_infection_density()</code>:</p>
+<p>The first parameter <code>symptom_begin_dates</code> contains the
+dates when the persons got symptoms.</p>
+<p>The second parameter <code>persons</code> contains the number of
+persons having symptoms on each date.</p>
+<p>The remaining inputs are the same as in
+<code>get_infection_density</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>symptom_begin_dates <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">as.Date</span>(<span class="st">&quot;2021-12-24&quot;</span>), <span class="fu">as.Date</span>(<span class="st">&quot;2021-12-28&quot;</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>persons <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>max_incubation_days <span class="ot">&lt;-</span> <span class="dv">18</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>misc_infec_date_df <span class="ot">&lt;-</span> <span class="fu">get_misc_infection_density</span>(symptom_begin_dates,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                                                 persons,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                                 max_incubation_days)</span></code></pre></div>
+</div>
+<div id="methodology-1" class="section level3">
+<h3>Methodology</h3>
+<p>This function uses the <code>get_infection_density</code> function
+and generates a mixture distribution [2]. This probability distribution
+is obtained by a sum of the infection probability distribution for each
+symptom onset day multiplied by the percentage of persons, which have
+started to show symptoms on this day.</p>
+</div>
+<div id="output-1" class="section level3">
+<h3>Output</h3>
+<p>The data shows the mixture log-normal distribution and thus gives an
+overview of the potential infection time points for all considered
+persons. However, it does not necessarily have to imply that they had
+their infection on the same time point. In fact, there did not have to
+be an event, where the persons met. It shows when the persons got
+infected and it is possible that there is more than one infection date,
+which can be seen based on several maxima.</p>
+<table>
+<caption>values 100 to 109 of resulting data frame</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">dates</th>
+<th align="right">distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">100</td>
+<td align="left">2021-12-10 04:00:00</td>
+<td align="right">0.0066933</td>
+</tr>
+<tr class="even">
+<td align="left">101</td>
+<td align="left">2021-12-10 05:00:00</td>
+<td align="right">0.0067743</td>
+</tr>
+<tr class="odd">
+<td align="left">102</td>
+<td align="left">2021-12-10 06:00:00</td>
+<td align="right">0.0068564</td>
+</tr>
+<tr class="even">
+<td align="left">103</td>
+<td align="left">2021-12-10 07:00:00</td>
+<td align="right">0.0069395</td>
+</tr>
+<tr class="odd">
+<td align="left">104</td>
+<td align="left">2021-12-10 08:00:00</td>
+<td align="right">0.0070237</td>
+</tr>
+<tr class="even">
+<td align="left">105</td>
+<td align="left">2021-12-10 09:00:00</td>
+<td align="right">0.0071090</td>
+</tr>
+<tr class="odd">
+<td align="left">106</td>
+<td align="left">2021-12-10 10:00:00</td>
+<td align="right">0.0071953</td>
+</tr>
+<tr class="even">
+<td align="left">107</td>
+<td align="left">2021-12-10 11:00:00</td>
+<td align="right">0.0072828</td>
+</tr>
+<tr class="odd">
+<td align="left">108</td>
+<td align="left">2021-12-10 12:00:00</td>
+<td align="right">0.0073713</td>
+</tr>
+<tr class="even">
+<td align="left">109</td>
+<td align="left">2021-12-10 13:00:00</td>
+<td align="right">0.0074610</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="visualization-example-of-the-data-frame-of-get_infection_density" class="section level2">
+<h2>Visualization example of the data frame of
+<code>get_infection_density</code></h2>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>.calculate_qstart_qend <span class="ot">&lt;-</span> <span class="cf">function</span>(probability, df) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    hdr_df <span class="ot">&lt;-</span> <span class="fu">hdr</span>(<span class="at">den =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(df<span class="sc">$</span>distribution), <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">p =</span> probability <span class="sc">*</span> <span class="dv">100</span>)<span class="sc">$</span>hdr</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    qstart <span class="ot">&lt;-</span> (hdr_df[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(hdr_df) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">2</span>] <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">24</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    qend  <span class="ot">&lt;-</span> (hdr_df[<span class="dv">1</span><span class="sc">:</span>(<span class="fu">length</span>(hdr_df) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">2</span> <span class="sc">-</span> <span class="dv">1</span>] <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">24</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="st">&quot;qstart&quot;</span> <span class="ot">=</span> qstart, <span class="st">&quot;qend&quot;</span> <span class="ot">=</span> qend))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>.shade_curve <span class="ot">&lt;-</span> <span class="cf">function</span>(df, qstart, qend, <span class="at">fill =</span> <span class="st">&quot;red&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  subset_df <span class="ot">&lt;-</span> df[<span class="fu">floor</span>(qstart <span class="sc">*</span> <span class="dv">24</span>)<span class="sc">:</span><span class="fu">ceiling</span>(qend <span class="sc">*</span> <span class="dv">24</span>), ]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> subset_df,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">fill =</span> fill, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="cn">NA</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">alpha =</span> alpha)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  symptom_begin_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">&quot;2021-12-28&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> infec_date_df</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  period_80 <span class="ot">&lt;-</span> <span class="fu">.calculate_qstart_qend</span>(<span class="fl">0.8</span>, df) </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  period_95 <span class="ot">&lt;-</span> <span class="fu">.calculate_qstart_qend</span>(<span class="fl">0.95</span>, df)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_start <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="fu">format</span>(<span class="fu">as.POSIXct</span>(symptom_begin_date, <span class="at">tz =</span> <span class="st">&quot;CET&quot;</span>), <span class="st">&quot;%Y-%m-%d&quot;</span>))</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_end <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="fu">format</span>(<span class="fu">as.POSIXct</span>(symptom_begin_date <span class="sc">+</span> <span class="dv">1</span>, <span class="at">tz =</span> <span class="st">&quot;CET&quot;</span>), <span class="st">&quot;%Y-%m-%d&quot;</span>))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_mid <span class="ot">&lt;-</span> symp_date_posixct_start <span class="sc">-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(symp_date_posixct_start,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                           symp_date_posixct_end, <span class="at">units =</span> <span class="st">&quot;hours&quot;</span>)) <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">3600</span> </span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_datetime</span>(<span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">date_breaks</span>(<span class="st">&quot;1 days&quot;</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">date_format</span>(<span class="st">&quot;%d %b&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># scale_x_continuous(breaks = x_tick,</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                    labels = x_label) +</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># theme(axis.ticks.x = element_line(color = c(rbind(rep(&quot;black&quot;, length(x_label) / 2), rep(NA, length(x_label) / 2))),        linetype = 2, size = 1))+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="fu">aes</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.shade_curve</span>(<span class="at">df =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>                 period_80<span class="sc">$</span>qstart,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                 period_80<span class="sc">$</span>qend) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.shade_curve</span>(<span class="at">df =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                 period_95<span class="sc">$</span>qstart,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                 period_95<span class="sc">$</span>qend,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_rect</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">xmin =</span> symp_date_posixct_start,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                            <span class="at">xmax =</span> symp_date_posixct_end,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ymax =</span> <span class="cn">Inf</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(<span class="at">xmin =</span> xmin, <span class="at">xmax =</span> xmax, <span class="at">ymin =</span> ymin, <span class="at">ymax =</span> ymax),</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="st">&quot;brown&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_label</span>(<span class="fu">aes</span>(<span class="at">x =</span> symp_date_posixct_mid, <span class="at">y =</span> <span class="fl">0.9</span><span class="sc">*</span><span class="fu">max</span>(df<span class="sc">$</span>distribution), <span class="at">label =</span> <span class="st">&quot;symptom</span><span class="sc">\n</span><span class="st">onset&quot;</span>),</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>              <span class="at">colour =</span> <span class="st">&quot;brown&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">label.size =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;probability&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;timeline&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">&#39;Verteilung&#39;</span>) <span class="sc">+</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ggtitle(&quot;Visualization of get_infection_density &quot;) +</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>, <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span><span class="sc">*</span><span class="dv">5</span><span class="sc">/</span><span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">angle =</span> <span class="dv">30</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;gray50&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;gray50&quot;</span>))</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  g</span></code></pre></div>
+</details>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="visualization-example-of-the-data-frame-of-get_misc_infection_density" class="section level2">
+<h2>Visualization example of the data frame of
+<code>get_misc_infection_density</code></h2>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> misc_infec_date_df</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  period_80 <span class="ot">&lt;-</span> <span class="fu">.calculate_qstart_qend</span>(<span class="fl">0.8</span>, df) </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  period_95 <span class="ot">&lt;-</span> <span class="fu">.calculate_qstart_qend</span>(<span class="fl">0.95</span>, df)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_start <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="fu">format</span>(<span class="fu">as.POSIXct</span>(symptom_begin_date, <span class="at">tz =</span> <span class="st">&quot;CET&quot;</span>), <span class="st">&quot;%Y-%m-%d&quot;</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_end <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="fu">format</span>(<span class="fu">as.POSIXct</span>(symptom_begin_date <span class="sc">+</span> <span class="dv">1</span>, <span class="at">tz =</span> <span class="st">&quot;CET&quot;</span>), <span class="st">&quot;%Y-%m-%d&quot;</span>))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  symp_date_posixct_mid <span class="ot">&lt;-</span> symp_date_posixct_start <span class="sc">-</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(symp_date_posixct_start,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                           symp_date_posixct_end, <span class="at">units =</span> <span class="st">&quot;hours&quot;</span>)) <span class="sc">/</span> <span class="dv">2</span> <span class="sc">*</span> <span class="dv">3600</span> </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  </span></code></pre></div>
+</details>
+<details>
+<summary>
+Source
+</summary>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_datetime</span>(<span class="at">breaks =</span> scales<span class="sc">::</span><span class="fu">date_breaks</span>(<span class="st">&quot;1 days&quot;</span>), <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">date_format</span>(<span class="st">&quot;%d %b&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>)) <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># scale_x_continuous(breaks = x_tick,</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">#                    labels = x_label) +</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># theme(axis.ticks.x = element_line(color = c(rbind(rep(&quot;black&quot;, length(x_label) / 2), rep(NA, length(x_label) / 2))),        linetype = 2, size = 1))+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="fu">aes</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.shade_curve</span>(<span class="at">df =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                 period_80<span class="sc">$</span>qstart,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                 period_80<span class="sc">$</span>qend) <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">.shade_curve</span>(<span class="at">df =</span> <span class="fu">data.frame</span>(<span class="at">x =</span> df<span class="sc">$</span>dates, <span class="at">y =</span> df<span class="sc">$</span>distribution),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                 period_95<span class="sc">$</span>qstart,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                 period_95<span class="sc">$</span>qend,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ylab</span>(<span class="st">&quot;probability&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">xlab</span>(<span class="st">&quot;timeline&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">&#39;Verteilung&#39;</span>) <span class="sc">+</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ggtitle(&quot;Visualization of get_infection_density&quot;) +</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>, <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">16</span> <span class="sc">*</span> <span class="dv">5</span> <span class="sc">/</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>, <span class="at">angle =</span> <span class="dv">30</span>, <span class="at">hjust =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="at">face =</span> <span class="st">&quot;bold&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;gray50&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">&quot;gray50&quot;</span>))</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  g</span></code></pre></div>
+</details>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAACIlBMVEUAAAAAABcAACEAACoAADIAADoAAGYAIToAOjoAOmYAOpAAZpAAZrYXFwAoSVgoSXsqOkkxAAAxADoxOjoxOpAyOkkyZnszMzM6AAA6ADo6OgA6Ojo6OmY6OpA6ZmY6ZpA6Zp06ZrY6kLY6kLw6kNtYMQBYkNtmAABmADpmOgBmOjpmWDFmZjpmZmZmZpBme2ZmkGZmkJBmkLZmkNtmtrZmtttmtv9/f39/f5V/f6t/lZV/lcF/q9aBgZ2QOgCQWDGQZgCQZjqQZmaQZraQkGaQtpCQttuQ27aQ29uQ2/+Vf3+Vf5WVlX+VlZWVlauVq6uVq8GVq9aVwdaVweucWACckGadgUmrf3+rlX+rlZWrlcGrq5Wrq6urq8Grwaurwdar1uur1v+2ZgC2Zjq2kDq2kGa2kJC2kLa2nYG2tma2tra2ttu2vJC227a229u22/+2/7a2/9u2//+8kGa8tmbBlX/BlZXBq5XBq6vBq8HBwdbB1tbB1uvB6//Wq3/Wq5XWwZXWwavW1sHW1tbW1uvW6+vW6//W/9bW///bkCrbkDrbkGbbtmbbtpDbtrbb27bb29vb2//b/7bb/9vb///rwZXrwavr1qvr1sHr1tbr68Hr69br6+vr6//r///vvLz1cXH4dm35Xlf8OTT/enr/tmb/tpD/zMz/1qv/25D/25z/27b/27z/29v/68H/69b/6+v//7b//9b//9v//+v///+qn0DUAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nO2di5/dxlXHL9ANtrvlDVmSQkgxhJSGR4otp3ENARqaJS5pDbjQlNabmEcLcRtqGqB1myaFsmmapl23DWzj1ZW3WWPqxLur/w+9NZqHNCPNjM7V/Z3PJ86V5jdndOZ+dzTSSOfOYhiMsM3GPgAYrM0AKIy0AVAYaQOgMNIGQGGkDYDCSJsdQLfjbcZijc/TFlE/PooirgIAdSmifnwURQDUo4j68VEUAVCPIurHR1EEQD2KqB8fRREA9SiifnwURQDUo4j68VEUAVCPIurHR1EEQD2KqB8fRREA9SiifnwURQDUo4j68VEUAVCPIurHR1EEQD2KqB8fRREA9SiifnwURQDUo4j68VEUAVCPIurHR1EEQD2KqB8fRREA9SiifnwURQDUo2jM44tyCykdEwAlJhqt6YTM6zu5pYiSOCZNEQD1KBqr6SgBswQ0RZTCMemKAKhH0ShNh1HKJwPozk449jEZiACoR9EYTUcFlCyg16NQWoHUgcsrAFCXohGajnZkgDKD6IL1GQB1KfLfdLSjALQidMH6DIC6FHlvOtpRAloSumB9ZhdQ2LgWXW+zcOzDG2IYQV2IPDfNjJ+SEbQYQxeszwCoS5HfpqPrHYBG/o8JgJIWeW063OkCNBtCF6zPAKhLkdemo25Ad0LD5iJ2Rd/VgQPQ0UQ+m452NABNCDVpLqpqR5J7AAB04UUem452tADdCfWbiyK2dugpOgDqUeSv6ZBnUgVopN0cvybl6cE9AOpR5K9p4fkQFaCNB0famhPXpPhLLAC68CJvTUcCh0pAr6sebWp+lq1JeXmyFIB6FPlqOhQ5VAPKjqHK5iJZ7QiATkzkq+lI5LAF0B35s3fsZ8WaVOi/zwCoS5GnpkMJh22ARl1NKNekPDybD0A9ijw1LXtGuQ1Q+cOh9Wf1Lf/Ie58BUJciP01Ln1FuBVT6cGj1OWzx5P7lEQDqUeSl6VBKUjugsodDq89ta1KRrILV6ACoR5GXpuUP0XcA2rIw1L4mpbgFAEAXUuSj6VBOUhegyoWhjlv+kfwwAOhCinw0rXjLoxNQxcJQ5y1/1++HAlCPIg9NhwqSugGVLgx131GV36MCoAsp8tC0dMlHD1DJfXedG1aOX2AGoB5F7psOVRzqACrcd9e6YRVJDgOALqbIfdPRIEB3osZFueb9ALdv2ANQjyLnTYdq9rQAbVzz6F5uRe3HBEAXR+S86WgwoDvFC0dRpD+bdZoCAoB6FLluOmxnTwvQdEjM6NT3BECnInLdtBFW9kSRy+gAqEeR46ZD++zpicR1UgC6kCLHTfOr5gAUgJqJ3DYtvMnpDdDIYXQA1KPIbdPCYx3eAHWZhgyAehQ5bTp0wx4AXSKR06bF5478AeowTx4A9Shy2bTkVWN/gDrMkwdAPYpcNi15MA6AAlAzkcOmZa8aewQ0chYdAPUocti09OeQ/AFqnGlUWwRAPYrcNR220gNAAejIgKp+r8sboJGnPgOgLkXOmpa/Cw9AAaiZyFnT6h+U8wWoYTJxfREA9SgCoACUtMhV04pkDV4BjQDo4otcNd32k5y+ADX5OQYTEQD1KHLUtCpZw1IDuhcEwWlx62oQnPoiAPXbtOr1Nr+A6v9eiJGoJ6B7wYV4//xpfutKQme6AUA9elUma1hiQA8vp2zuFYNltXVr/Vzy4crDrwNQj16VyRr8Aqr9gzZmon6A5iTm/zJb+eB5tTrJkydmCoCqkzUsNaApifvnzzW38iEVgHr1qk7W4BlQNtvy2IDmQ2U5Ca22ilN8tnlnYu1OYFYsuk7EIp9R9wO0uEiqrpLID2kTGEFbsol4HkE1f7NuWJ9pAqo4xaejZ/Dwf/8pTvH+vLZkE1lqQM9VYPJb8d5DXwOgvry2ZRPxDajqJz9GAFRxmykvvFLdwCdPzOID2pZNZIkBVdyoz/bUF/EA1LnX1mwivgHV+lnagX2mC2i1uJlfIJVbt9aDoDrBA1D3XluziSw1oFpGnhgACkAdHPPCiqx7bU934x1Qxa96AdBFEVn32p7uBoACUDORba8d6W68A6r42TkAuigi21470t0AUABqJrLstSvdjX9A5b+LCEAXRWTZa1e6GwAKQM1Edr12ZhPxD6j8hzsB6KKIrHrtziYCQAGomciq1+5kDQAUgJqJbHrVSNYwAqDSnz4GoIsisulVI1kDAAWgZqLpAyr9bW4Auigii151sokAUABqJrLoVSebCAAFoGYie15DbWI8i6KOAweglEX2vEbaxABQAKotWgJAy3M8AF1EkTWv4SjsAdCpi6x5jQAoAHUgsuU1HIc9LVHkts8AqEuRLa8RAAWgLkTLAGhxjgegiyiy5DUciz0AOnGRJa8RAAWgTkR2vPL5wogBGjntMwDqUmTHK58vDIACUEsiK16FfGEAFIBaElnxKqRjIgZoPgkFoIsoAqAAlLTIhlcxXxgABaCWRDa8ivnCqAEauewzAOpSZMGrJF8YAAWglkQWvEryhVEDNDvHA9BFFAFQAEpaNNyrLKEdAAWglkTDvcoS2pEDNHLYZwDUpWiw11AGBgAFoJZEg71KMy4CUABqSbQkgKaTUAC6iKKhXuUpQQEoALUkGupVnhIUgAJQS6KBXhUpQekBGi0KoDCrFl1fFAud9wVGUBeigV4VKUHpjaDJOX4xRlDyxCwUoKqUoAQBjQDoQoqGeVWlBCUI6E4IQBdRNMhrSIQ9ADpd0SCvERH2tEQRAF1E0RCvIRX2AOh0RUO8RlTYA6DTFS0PoMwPcwPQxREN8BrSYQ+ATlY0wGtEhz0AOllRf698wjDygEaKiAAoZVF/r3zCMAAKQB2IACgAJS3q7VXIaEce0OuhfnQm3QFAXYp6exUShgFQAOpA1NermDAMgAJQB6K+XsWEYQAUgDoQ9fQqSRhGH9BINzqz7gCgLkU9vUryMQFQAOpABEABKGlRP6+yhGH0AWUWOwHoooj6eZUlDAOgLGf75z/0BQBqQdTLqzRhGABtAHo5CIInvgpAh4p6eZXmY1oAQCOt6Ey7QwpoHB8+/3gQnHriPwAoACUJaGJvPb+eMPqJ7wPQ/qI+XuUJwwCojLc3/yU51X/IYBglT8wCACpPGLYAgNaTUD+AHn7vo0Hwvr95PDh1AYD2FPXwqkgYBkAldJ76cHp+/27w8OsAtJ+oh1dFPiYA2sAzO7UXd5r2zz/0NQDaT2TuVZWPCYCynO2fP/WJatTc/6uPYATtKTL3qsrHtAiARp3RWRtBjS7dASgA9Q3oay8Wg+b3/k179ASgFiooE4YBUJazatppMv8EoBYqKBOGLQKg1STULaDfefLJj62f+rMnU/tYAECHiEwrqBOGjc2elsgPoLfWA8Y+bMInAB1YQZ2PaWz2tER+AI1fe+Er66f+/YXUvmp4tUSeGNqAtuRjGps9LVHUEaklQJOLpOc+bnRtBEDtVGjJxzQ2e1oib4D2NvLEkAa0LR/T2OxpibwAmt5iOnzthdJexG2mASKzCm3pbsZmT08U2u8zAdD0ztL++eoiCVfxQ0QA1MEImsw/D597sjSzySh5YigD2pqPaXT2tEQ+AB1k5ImhDGhrPqbR2dMSAdAFE5lUaM/HNDp7WqLIfp8JgDIXSLhIGioyqdCej2l09rREPgBlLpAaF0l7ycbpisRqq7mbPDF0Ae3IxzQ6e1oiLyNofYHEXiTtBRcSdk/H3Nbew6/Ht9ZPA9DBFTrS3YzOnp4otN5nAqByO7ycQrh36ovNrf3z55IPV6thljwxZAHtSnczPntaotEAvbV+rvqX2SqJxQg6tEJXupvx2dMSeQBUvpJ0az19tTMfMJmtqw/95/lyDnpnYu2Uw9QWXZ+Ehc46qGMlKZ10xtUktNq6GiRDaH7Cz4z8kEZ1BO3MxzT+4Kgliqz3mQCofCVJCWg6pNYnevLEUAW0M93N+OxpiTwAKjfVKT5DM+cVgPav0J1NZHz2tEQjAnquApPZ2gOgNipoJGsYnz09UWi7z1SA/s/nz549W2e3U9xmykndw22mQRV0kjUQYE9L5AvQLxXXSOfKHYob9ekt0MPLlYo8MSQB1XkXngB7WiJPgCZX559MBsrvrFcn72pNMz+fN5Y6Kz4BaJ8KoeR7psielsgPoIeXCzD3DBKHAdCeFSLJ90yRPS3R3HafSQFF4gZLIp0KIQGs7In8AHp4GYBaEelUiAhgZU/kB9D4ajGv3GPmlwDUCaAhBazsiTwA+lZa8OXgw8m/z69/xCxzA3li6AEaUcDKnuhaaLnPBEBVDywDUACqIXIPqOKBZQDaR9RdISSBlT2Re0AHGXliyAEakcDKngiALpSoswKf7YYye1qia3PLfaYCNLtU2n7tK/+KOegAUWcFPpkIZfa0RJ4A3f8oLpJsiLoqCMlEKLOnJfIE6JUgeDwI3hdkS/IAtLeoq8KcCFb2RNfSSahzQNO1+MPL6UubuFHvEtDwGhGs7In8AJqtcF4JLuBhEbeAzgFoZ5+pAU2XO7EW7xLQ8BoA7ewzKaDZwyJ7wWkA6hTQ+SQBnXsANDm9fzK+tf7w67fWAegQUWuFZAAFoJ19Jgc0A/NKcIpNDAZALQM6B6AafSYHNH7zr9N3jYLgCbNf+yBPDCFA0wF0ioAmk1APgOZ2aEQnADWqMAegOn3WCqixkSeGDqDZAApAO/tMBSj3XjwA7SVqqTAHoFp9pgBUeC8egPYRqSvkA+gkAZ17AFTyXjwAtQroHIDq9ZkUULwXb0mkrFAMoAC0s8+kgOK9eEsiZYU5AB02ggJQKyJVhfCNCQN6LfQxB8V78TZEqgpzANofULwX7xzQ8BoA7Q0o3ot3D+gcgPYHFO/FOwc0uYSfNKBz93PQvkaeGBKAzgGofp8BUJciaYX0FhMAHQrom8+dPXv241iLtw9odo9+0oBeCy32mQLQq1iLtyGSVZgDUJM+kwO6FwQf+X781pcDrMXbBjRf5ASggwA9vFwMnVfxyodtQOcA1KjPpIBiLd6SSKxQPCUybUDnFvsMgLoUiRXmANSsz6SA4nE7SyKhQvmYHQAdBGgy93wovcP0JnIzWQZ0DkAN+0wOaPrG8fvOPh4YDqAAtKNCOYBOHNA3QnUXmPaZHND48Pn1IAhOfcKMT1iHzd/g7PrULA8rtN91kqXObXFXl5Ef0sYdQcsTPEZQ/T6TAlo9UQ9AbQJaneABqH4nSwE1vbsEQLUqzJcG0LmqC8w7WQpoml0ZgFoQNSowAygAHXiRdPj5U0+8kNmLuA86QNSoMAeg9k7xeOXDioj9XL3JuQSAMqvxbk7xz+GVDysi9vMcgNo7xfc18sSMB2j9ohwANelkAOpSVH9mXpQDoCadrAI0S7+IVz6sATpfLkDn0u6wCCjSL1oRVZ/DawDUtM/yDTmgefrF+LtIv2gJ0DkANe6zfEMKKJ4HtSQqPzdelAOgJp0sBRRP1FsSFZ+bL8otA6D1VZKjERSAWhEVn+cA1LjPyg0poNXbnFfxRL0FQLkX5QCoSSfLAX3r+eBDX9h+7fNZEsZt/RSM5IkZBdA5ADXus2pDCmjvFIzkiRkDUP49pKUAdC7rDntz0L4pGMkTMwKgwntIANSkk6WA9jbyxIwA6ByAGvcZswFAXYribcl7SEsBaDUJBaCURex7cgAUgJITxbKn6AGoSScDUJci9jUkAApAyYnmywvoXNIdAJSYqPGWBwAFoMRE4TUACkAJi+YAFIASFnFveSwZoOVVEgClKuLf8gCgAJSUiH/LA4ACUEoi4S0PAApACYnEtzyWDdB5z44FoF5E4lseABSA0hFJHqIHoACUjEj2EP2yAVpMQgEoQZH0IXoACkCpiKQP0QNQAEpEJH+IHoACUBoixUP0SwfovF/HAlDHItlvJQBQ/Y4FoI5Fqrc8ACgApSCSpqJfSkDzSSgApSWSp6IHoPodC0BdihSp6AGofsf2BXQvCIqUd42tK0HA/CodPWI8ixSp6AGofsf2BHQvuBDvnz/Nb1156GvZBgDNTJXpezkBnffq2H6AHl5O2dwrBstq69b6hXILgLZk+gag+h3bD9Bb6+eqf/ktAFp8Vmf6BqD6HdsX0PQ0vn/+nGTraj6u3plYu5Op2/wNY7s+NWtEF1rs3A5A83lmOQllt/bYH1MiNqT5FbUkUl7OETS7SvI0gqoBTf9f/VYNLWL8itoSKQNQ/Y61f4ovz/HLDWhrnloAqt+xwy6SLki2mPtMlIjxK2rPU7ukgM77dGw/QNtuM2EE3Y7Ddg4BqH7H9gNUcaM+I7U61S8xoB2JlAGofsf2BLRa3MzP5+xSJ67ilY/YLTmg6STUG6BaRoYYvyLlI3YAFIASEKkfsQOgAHR8UcsTTAAUgI4uanuCadkBnQPQ0UVhG5QAFICOLWp9xA6AAtCRRWIWOwDKRBoC0HFFHU8wAVAAOqqo6wkmAApAxxR1PsEEQAHoiKLuJ5iWHtA5AB1PpPGACAAFoGOJQp0HRAAoAB1JpLf+vvSAXgsB6CgizfV3AApARxHprr8DUAA6hkh7eROAAtARRPrLmwB0DkC9iwyWNwEoAPUuMlneBKAA1LNobrS8CUDLHz3W730AOkRkuHoEQAGoV5Hp6hEABaA+RSyfABSAUhPNO3kDoAB0PNG8mzcACkBHE801eAOgQqRx2NWx7d8EANUTzfnldwAKQAmJxNVNAApA6Ygkq5sAFICSEclWNwEoACUikq9uAlAASkOkWN0EoJqAboeKjtX7JgBoh0i1uglAASgBURga8QZAAahXUdK3ABSAUhWFadcCUABKVJR3LAAFoCRFYdGvAHQooAyhANSaqOpUAApA6YnCuk8BKAAlJ2IXPwAoAKUlCsNGNgwAOiVAJ2Aht/2GU7s+NRMilHRpL8MImlk++cQIanUErYfQ0UdQyuxpiMprIwAKQCmKpP0IQAEoDVEon8sDUABKQRSqnqsFoAB0fFGozrMKQIcDWhEKQHuJwrafNQegAHRckXhnCYACUDIi2Z0lAApAiYhC6fQdgAJQEqJQ8SgtALUN6LbkPAVAO0TNK3cACkC7YfAo4q/cASgA7YbBm0i8cgegALQbBj+iUHblDkABaDcMPkSKJXcA6hTQglAA2vE5VC65A1AA2g2DW1HYdmEEQAFoNwwOReXYCUABqOkhuBeF8hUjAOoP0O3W+yZLDajevBOAAtBuGByIEjqHeQKgANSVKMwHTwAKQAkCWp/ZASgApQZoqPWgEgD1COg2fzJbWkCzE7u95gAoALUo6rrdCUAB6AAYBoo0bncC0NEA3dZcx5syoC6aA6AA1JYIgI4vAqAAlLSoBdBt9bUrAO3fHAAFoJZExo96AlC/gG4rX1MEoP2bA6AA1JIIgBIQtQKq9RUBUDMRAAWgg0Vhbk6aA6AWAdW5jp0UoA0y3TQHQAGouagAU512FoAC0DEADbmTOQClJuoA1PBHvRYE0DBkwfRwuQVAAWhXQRiyWHq+HwBAnQFq9oMKtAANG1COcz9A3ACgywto2DTv7AHQEQA1yrZsAuheEASnxa3m7hYYQtH6EQNAKYu6ATXJdGcA6F5wId4/f5rfau4e/5UP+yIAahtQgzQ4+oAeXk4h3Dv1xeZWczcABaA6gOq/gqwP6K31c9W/zFZzNwAFoFqAar9AZwLoheTf/fPnmlvN3QAUgOoBul1dgnR+E5qApnPNuJptVlvs7jsTa3cCgzHGXC5rqIcDmhqZcY+IiPrxURThFO9RRP34KIr6AnquApPZau4GoISaXlhRP0CX9zYTAF0IQJf3Rj0AXQxAqzXN/LrIfKnTeWAURdSPj6KoL6BaRj56AEpeBEA9iqgfH0URAPUoon58FEUA1KOI+vFRFAFQjyLqx0dRBEA9iqgfH0URAPUoon58FEUA1KOI+vFRFAFQjyLqx0dRBEA9iqgfH0URAPUoon58FEVOAY2Vz9QbF0zC0ySCoOEJgLrwNIkgaHgCoC48TSIIGp4sAQqDuTEACiNtABRG2gAojLQBUBhpA6Aw0gZAYaQNgMJIGwCFkTZLgB68aqtgEp4mEQQNT1YAffn+2ezoYzYKJuFpEkFQ8WQD0M1ZYiuSlowLJuFpEkGQ8WQB0BtrsxPxzS0LBZPwNIkg6HiyAOju7JikmT4Fk/A0iSDoeBoE6Mvvnh05kTi849lk46W11f4Fk/A0iSCoeRoCaDZXmN2bDMnHk62N2Wrvgkl4mkQQ5Dz1APTg5Xe/89GtdK6QTGQTpyfOpDPa2/fPftW44Bem4GkSQVD0dLwXoAcX14qLrM0E8YOnZysnEuRnR2azH/9p04LZFDxNIgiKnvKZqCmg6S2qlQfePUvmCZuzY/+wNrt36+alG8nO2TuMCybhaRJBUPR0b36lZAbowSOJuxPJh68ngCf/ze65dHAmHYr/7zcNCw5+fwKeJhEESU8/fKbnbaaN2exk+eH37ktH4cThyT4Fk/A0iSBIeqrMENDb9xVTg/RDgvyRB+7KdxgXTMLTJIIg6akvoOlV1vHiwx3PvrRWzxWMCybhaRJBkPRUmh6gNz9dfkpG4Ow2arybXngdfOpTn3uvomBLUeMvf27LrEJngTNPf/9+ZRC/btrC536pPWw63fG/71d68vhll6YF6A/W6jX93QL5zGF6UZ/75wsYaxSkdwFOSvYfXLz77hOSCgcvP/DgqzJPScFvXZIek6ppVUHq6RlZBWXYxlGrwjaOOtYJW++YVGGP+GXHEtMCNHFSr0dtZJ4S8o9t3XyEHZKZgvRm6T1bYo1XHpkxD7CwnrI7EcfFCun+lfeKnr6lqJA0+tIv1pGyBWm3SA4293RSUkER9iumUef9JAn7FdOot24rwzaMuvAkCXu8L5sfPDPTAnSTCSV92GQ1/vpa4jaZ2M7uuRSLBUlria1ucQVv++1kjnHP/dUxNyoce+ap6u+zKvjgmdnRB9bqxusaG7OjH6j/Puv92XR7VXJMcf6NlL3QaCLxJOx/TBX2nxhGvfLBi4qwP2gcdawM2zDq9GAVYY/2ZUsHUH1Aa77zJdOjl4rl0pvVtKEqSCa8z3z9wa2Yq/GPa7Ojjx6cKY+MqXBjLdl5+76qpCwo9tcHXxYk+06mBWWN+pgacqYg/Uaeebru+0YTN9aOCUEowzaMOmlBEbZx1LE6bMOoY3XYo33ZsdRaAS0nPBsrH1ir/6rSv6Uf/Ym0YHd2xz8xN/2rgo1s/K4f508LfuQnL8VPnUjvc9UdWVW4kbpPuutVriB/sGWzPumkBemd3fx2bvbH19gfZ/MRpoOrgmyll3k0oSzIumt3tvpNvoIs7KxAEnW2XxZ1ViALO29ajDrdr4y6JWzDqFvCVkRtHLYqamXYcmsDtJrwbKSn1Ds+W/71bP7YO/KC1PVsZa3qyaLgXWk3PsXOov5rVs062GOuPW3MZndnf0ePNQp+OXuwZZeZymyu/PzPPJZ1S/p1bFQFmyv3/nM2C7t938rvMOeoqoD/qkpPB3+3lXbZTPQkhF00LUSdVzgQoq498WFXQXBR5xVuSKL+lb/IppJC2G/7qZ9N94tR5xUkUecFYtiFJzHqomkx7Kzg22LYpSch6ioIIWzp9DOzNkDLCU86UGfBlB3w5+VMaCOF66Dur6Ig+WN+OovlOOcpO2Z2paD0dPDIXcmM5Y/XqlGg8rRy4pX7j6zVPfxKPtnazbwxM69Xb5cFx759ZlafWcqC27/x4Fb5597wFGdlyTyxrFN6EsIuK/BRFxU2+KgrT0LYhSch6sqTEHUxleTDvv1r5X4u6qLCt8So60lpI+zSkxh1WYEPuyj4Az7s0pMYdeFJDDtWWwug1YTns8kxp1deR05wBc/mDz/fKE8JZUFqq1tJLGXw7NSJ7S2mYLcYNThPd6W+Tm7Wp69islXcP9sQCuKnyiEo5gpKt5L9MdM000Qz7KoCF3VZsMtF3WxiQ3pIzajLguIKu466mkpyYddTTC7qxtyTjZqflJZtMy00o64rcGGXBQ9wYTdaYKNmCviwW6wF0GrC8/Yzd7wnY44vWD34Zr3NFuTn86pjGlMnBja2IAtF9PT2i3e/89HyIeuiRzMH+f2zbCrVLMj7pYleWbDLDjLCtO1ks+CAC7uqwEVdFqSXs8ebODBNsGHX+5tR101zUddn6mbYzTM4E3WjgI1aMik92djPR11X4MIuC97Ohd1ogY2aKeDDbrH2U3w+4cnsnovsXbN6JnQzvbash4mqxjH21MJWuMHcCGYK0qUu5sttTrbq11TqyVbSygmm7xuzMPamC1uQ9s7NR/Iq7P5vbDGHVRZkpwImbLZCI+qyYJeLulGDDbvez0XdnErWUTe+WybsJm5M1I0CNupGARN2tZ+PulGBDbsq4MJuVGCjZgq4sNusDdBqwpPMZ59JgD96iS9YjV9aSye8q2KN5HBvVkfATp2Sf4+LTawmo+XKe+ppSV1w88zR96yxX1ox2UpbOcI2zc7CNmeSGunf7LuemlVLF9X+p5KmJZ42mmEzFfioqwqNqBvHxIZd7xeiLguaUTMT6EbY3MS6jpotaETNFrBh1/u5qNkKjbDZGmzYjWNio2YKuLDbrA3QasJz5FFFQTI7b6zvVwVH82dUmTlUPXXizvFlQXY7TPR07GK2v2q7nmzdvp+t0JyFJdVXJTXuY++41fu5hxTKgtvVEwh8hV15hfyeNRMee0yb0v3NqOuCl5pRx3F1EuXCZucUbNRMhUbUTIHwbEY+8+eiZirsCg9zZAVC2MwxbXIUFgVc2C3Weh9UmOdJCg6+wa7vVwWfbSyMNTzd/iNZhWe5JwXqgpt/+LvcTdzyzP/DT2/JC+L4ByckBensuHnHraiQNM1dSTZmsZIKjairgoNHxH4vPTXCbjQtDUKMuprOcGEzU8xm1EWBGHVZgw+7MUWXVuDDzgvEsCtPfNRM0zp4dq0kcfM8o4KDb26ZVdAt4FYzDf+88AgAAAI1SURBVAqS+RNHj7GnrgrNqId4EoydSursLws+I0Td15O6gA/b3JPK2gHl5nkDCux5Sm1TdYeio+BvhfU0Y099mx5coTGV1NhfF/BR9/dk75jE+BTWsRYvTHh6F9jzFAuTrQEF7ivY8iROJdv3mxeM6UlpnQ+LCPO83gX2PAlTzAEF7itY8iROJdv3mxeM6UlpSGC7KCZOoNv3mxeM6UlpAHRhTJxAt+83LxjTk8oAKIy0AVAYaQOgMNIGQGGkDYDCSBsAhZE2AGrXmFcu2zU6QhgAtWk3HwSg1g2A2rKDpxVL64KBTQMDoLZsV/HklWgA1MAAqCXLX9069q0UvvR1gPSJ7ZX3Zvmz3pkt72XJ/bN3JZlTfJp9UCaBlQZALRkHaGFZgoL8qfNi3708oEdkElhpANSW5af42yWgd1zKXrxZzd5GPpk9hXwiTXtQJgKoAE1237yPl8BKA6C2jAP0ZPbwY5FkKcsSVOTCXuUAzXMFcBJYaQDUljUBLd7Rq1JM5Nks8pcfuTloXADKSsYOho4BUFumC2jBZhuguMavDYDask5AmVwnKkBxbhcMgNqynC8VoMW9z4xiBaCsBFYaALVlOY4qQNPbUNkVfZ6uWwYoK4GVBkBtWfZGbXUfVAA0T6lYJoKTAspIYKUBUGuW/gTqsc+oAI0PLt41mx1Ns1ypAGUksNIAKIy0AVAYaQOgMNIGQGGkDYDCSBsAhZE2AAojbQAURtoAKIy0AVAYaQOgMNL2/0MtiSJzxcBMAAAAAElFTkSuQmCC" /><!-- --></p>
+</div>
+<div id="literature" class="section level2">
+<h2>Literature</h2>
+<p>[1] Xin H, Wong JY, Murphy C, Yeung A, Taslim Ali S, Wu P, Cowling
+BJ. The Incubation Period Distribution of Coronavirus Disease 2019: A
+Systematic Review and Meta-Analysis. Clinical Infectious Diseases, 2021;
+73(12): 2344-2352.</p>
+<p>[2] <a href="https://en.wikipedia.org/wiki/Mixture_distribution" class="uri">https://en.wikipedia.org/wiki/Mixture_distribution</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
